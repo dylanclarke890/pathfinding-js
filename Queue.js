@@ -1,4 +1,4 @@
-class Queue {
+var Queue = class {
   get size() {
     return this.arr.length;
   }
@@ -23,4 +23,4 @@ class Queue {
   tail() {
     return this.arr[this.arr.length - 1];
   }
-}
+};
