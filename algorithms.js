@@ -1,3 +1,30 @@
+var ALGO = ALGO || {};
+class Queue {
+  get size() {
+    return this.arr.length;
+  }
+
+  constructor(/** @type {any[]} */ arr) {
+    this.arr = arr || [];
+  }
+
+  head() {
+    return this.arr[0];
+  }
+
+  enqueue(val) {
+    this.arr.push(val);
+  }
+
+  dequeue() {
+    return this.arr.shift();
+  }
+
+  tail() {
+    return this.arr[this.arr.length - 1];
+  }
+}
+
 // Create a 4x4 grid
 // Represent the grid as a 2-dimensional array
 const gridSize = 4;
@@ -130,3 +157,5 @@ function exploreInDirection(currentLocation, direction, grid) {
 // Think of the second index as "distance from the left-most column"
 
 console.log(findShortestPath([0, 0], grid));
+
+ALGO.breadthFirst = findShortestPath;
