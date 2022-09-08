@@ -52,6 +52,24 @@ class Point {
   }
 }
 
+class Path {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.squareSize = SQUARESIZE;
+  }
+
+  draw() {
+    ctx.fillStyle = "Orange";
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "grey";
+    const x = this.x * this.squareSize,
+      y = this.y * this.squareSize;
+    ctx.fillRect(x, y, this.squareSize, this.squareSize);
+    ctx.strokeRect(x, y, this.squareSize, this.squareSize);
+  }
+}
+
 const S = "Start",
   E = "Empty",
   O = "Obstacle",
@@ -76,6 +94,7 @@ const grid = [
 const gridSize = { w: 17, h: 14 };
 
 let points = [];
+let paths = [];
 (function createGrid() {
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -101,29 +120,41 @@ function findShortestPath(startCoordinates, grid) {
   let q = new Queue([location]);
 
   // Loop through the grid searching for the goal
+
   while (q.size > 0) {
     const currentLocation = q.dequeue();
 
     // Explore North
     const north = exploreInDirection(currentLocation, "North", grid);
     if (north.status === "Goal") return north.path;
-    else if (north.status === "Valid") q.enqueue(north);
+    else if (north.status === "Valid") {
+      q.enqueue(north);
+      paths.push(new Path(north.x, north.y));
+    }
 
     // Explore East
     const east = exploreInDirection(currentLocation, "East", grid);
     if (east.status === "Goal") return east.path;
-    else if (east.status === "Valid") q.enqueue(east);
+    else if (east.status === "Valid") {
+      q.enqueue(east);
+      paths.push(new Path(east.x, east.y));
+    }
 
     // Explore South
     const south = exploreInDirection(currentLocation, "South", grid);
-    console.log(south);
     if (south.status === "Goal") return south.path;
-    else if (south.status === "Valid") q.enqueue(south);
+    else if (south.status === "Valid") {
+      q.enqueue(south);
+      paths.push(new Path(south.x, south.y));
+    }
 
     // Explore West
     const west = exploreInDirection(currentLocation, "West", grid);
     if (west.status === "Goal") return west.path;
-    else if (west.status === "Valid") q.enqueue(west);
+    else if (west.status === "Valid") {
+      q.enqueue(west);
+      paths.push(new Path(west.x, west.y));
+    }
   }
   // No valid path found
   return false;
@@ -227,6 +258,9 @@ function drawPath() {
 function update() {
   for (let i = 0; i < points.length; i++) {
     points[i].draw();
+  }
+  for (let i = 0; i < paths.length; i++) {
+    paths[i].draw();
   }
   drawPath();
 }
