@@ -59,7 +59,6 @@ let paths = new PF.utils.Queue();
   }
 })();
 
-// Start location will be in the following format:
 function findShortestPath(startCoordinates, grid) {
   const [x, y] = startCoordinates;
 
@@ -76,7 +75,6 @@ function findShortestPath(startCoordinates, grid) {
   let q = new PF.utils.Queue([location]);
 
   // Loop through the grid searching for the goal
-
   while (q.size > 0) {
     const currentLocation = q.dequeue();
 
