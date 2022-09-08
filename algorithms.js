@@ -60,7 +60,7 @@ class Path {
   }
 
   draw() {
-    ctx.fillStyle = "Orange";
+    ctx.fillStyle = "lightblue";
     ctx.lineWidth = 2;
     ctx.strokeStyle = "grey";
     const x = this.x * this.squareSize,
@@ -76,22 +76,23 @@ const S = "Start",
   G = "Goal";
 
 const grid = [
-  [S, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, O, O, E, O, O, E, E, E, E, E, E],
-  [E, E, E, E, E, O, E, E, O, E, E, O, E, E, E, E, E],
-  [E, E, E, E, E, O, E, E, E, E, E, O, E, E, E, E, E],
-  [E, E, E, E, E, E, O, E, E, E, O, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, O, E, O, E, E, E, E, E, E, E],
   [E, E, E, E, E, E, E, E, O, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G],
+  [E, O, E, O, O, O, O, E, E, O, E, O, O, O, O, O, E],
+  [E, O, E, E, E, E, E, O, E, E, E, O, E, E, E, E, E],
+  [E, E, O, O, O, O, E, O, E, O, O, O, E, O, O, O, O],
+  [O, E, O, E, E, E, E, O, E, E, E, O, E, E, E, E, E],
+  [E, E, O, E, O, O, O, O, O, O, E, O, O, O, O, O, E],
+  [E, O, E, E, E, E, E, E, E, O, E, O, E, E, E, E, E],
+  [E, O, E, O, O, O, E, O, E, O, E, O, E, O, O, O, O],
+  [E, E, E, E, E, O, E, E, O, E, E, O, E, E, E, E, E],
+  [O, E, O, O, E, E, E, O, E, E, O, E, O, E, O, E, E],
+  [O, E, E, O, O, O, O, E, E, O, E, E, E, O, E, O, E],
+  [E, E, O, E, E, E, E, E, O, E, E, O, E, E, E, E, E],
+  [E, O, E, E, O, O, O, O, E, E, O, E, E, O, E, O, O],
+  [S, O, O, E, E, E, E, E, E, O, E, E, O, E, E, E, G],
 ];
 const gridSize = { w: 17, h: 14 };
+const startPoint = [0, 13];
 
 let points = [];
 let paths = new Queue();
@@ -216,7 +217,6 @@ function new2dCanvas(id, width, height) {
 
 const [canvas, ctx] = new2dCanvas("play-area", 680, 560);
 
-const startPoint = [0, 0];
 const result = findShortestPath(startPoint, grid);
 
 function drawPath() {
@@ -228,7 +228,11 @@ function drawPath() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "green";
-  ctx.fillText(currentStep, x + SQUARESIZE / 2, y + SQUARESIZE / 2);
+  ctx.fillText(
+    currentStep,
+    x * SQUARESIZE + SQUARESIZE / 2,
+    y * SQUARESIZE + SQUARESIZE / 2
+  );
   currentStep++;
   result.forEach((path) => {
     switch (path) {
