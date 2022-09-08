@@ -24,6 +24,8 @@ class Queue {
   }
 }
 
+const SQUARESIZE = 40;
+
 class Point {
   static colors = {
     Start: "yellow",
@@ -36,7 +38,7 @@ class Point {
     this.x = x;
     this.y = y;
     this.status = status;
-    this.squareSize = 40;
+    this.squareSize = SQUARESIZE;
   }
 
   draw() {
@@ -58,7 +60,7 @@ const S = "Start",
 const gridSize = { w: 4, h: 4 };
 const grid = [
   [S, E, E, E],
-  [E, O, O, O],
+  [E, O, E, O],
   [E, O, G, E],
   [E, E, E, E],
 ];
@@ -171,12 +173,52 @@ function new2dCanvas(id, width, height) {
 
 const [canvas, ctx] = new2dCanvas("play-area", 700, 560);
 
-const result = findShortestPath([0, 0], grid);
+const startPoint = [0, 0];
+const result = findShortestPath(startPoint, grid);
+
+function drawPath() {
+  if (!result) return;
+
+  let [x, y] = startPoint;
+  let currentStep = 0;
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "purple";
+  ctx.fillText(currentStep, x + SQUARESIZE / 2, y + SQUARESIZE / 2);
+  currentStep++;
+  result.forEach((path) => {
+    console.log(path);
+    switch (path) {
+      case "North":
+        y--;
+        break;
+      case "South":
+        y++;
+        break;
+      case "East":
+        x++;
+        break;
+      case "West":
+        x--;
+        break;
+      default:
+        break;
+    }
+    ctx.fillText(
+      currentStep,
+      x * SQUARESIZE + SQUARESIZE / 2,
+      y * SQUARESIZE + SQUARESIZE / 2
+    );
+    currentStep++;
+  });
+}
 
 function update() {
   for (let i = 0; i < points.length; i++) {
     points[i].draw();
   }
+  drawPath();
 }
 
 let stop = false,
