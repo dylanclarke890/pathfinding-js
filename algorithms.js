@@ -75,31 +75,58 @@ const S = "Start",
   O = "Obstacle",
   G = "Goal";
 
-const grid = [
-  [E, E, E, E, E, E, E, E, O, E, E, E, E, E, E, E, E],
-  [E, O, E, O, O, O, O, E, E, O, E, O, O, O, O, O, E],
-  [E, O, E, E, E, E, E, O, E, E, E, O, E, E, E, E, E],
-  [E, E, O, O, O, O, E, O, E, O, O, O, E, O, O, O, O],
-  [O, E, O, E, E, E, E, O, E, E, E, O, E, E, E, E, E],
-  [E, E, O, E, O, O, O, O, O, O, E, O, O, O, O, O, E],
-  [E, O, E, E, E, E, E, E, E, O, E, O, E, E, E, E, E],
-  [E, O, E, O, O, O, E, O, E, O, E, O, E, O, O, O, O],
-  [E, E, E, E, E, O, E, E, O, E, E, O, E, E, E, E, E],
-  [O, E, O, O, E, E, E, O, E, E, O, E, O, E, O, E, E],
-  [O, E, E, O, O, O, O, E, E, O, E, E, E, O, E, O, E],
-  [E, E, O, E, E, E, E, E, O, E, E, O, E, E, E, E, E],
-  [E, O, E, E, O, O, O, O, E, E, O, E, E, O, E, O, O],
-  [S, O, O, E, E, E, E, E, E, O, E, E, O, E, E, E, G],
+const grids = [
+  {
+    startPoint: [0, 13],
+    g: [
+      [E, E, E, E, E, E, E, E, O, E, E, E, E, E, E, E, E],
+      [E, O, E, O, O, O, O, E, E, O, E, O, O, O, O, O, E],
+      [E, O, E, E, E, E, E, O, E, E, E, O, E, E, E, E, E],
+      [E, E, O, O, O, O, E, O, E, O, O, O, E, O, O, O, O],
+      [O, E, O, E, E, E, E, O, E, E, E, O, E, E, E, E, E],
+      [E, E, O, E, O, O, O, O, O, O, E, O, O, O, O, O, E],
+      [E, O, E, E, E, E, E, E, E, O, E, O, E, E, E, E, E],
+      [E, O, E, O, O, O, E, O, E, O, E, O, E, O, O, O, O],
+      [E, E, E, E, E, O, E, E, O, E, E, O, E, E, E, E, E],
+      [O, E, O, O, E, E, E, O, E, E, O, E, O, E, O, E, E],
+      [O, E, E, O, O, O, O, E, E, O, E, E, E, O, E, O, E],
+      [E, E, O, E, E, E, E, E, O, E, E, O, E, E, E, E, E],
+      [E, O, E, E, O, O, O, O, E, E, O, E, E, O, E, O, O],
+      [S, O, O, E, E, E, E, E, E, O, E, E, O, E, E, E, G],
+    ],
+  },
+  {
+    startPoint: [8, 7],
+    g: [
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, S, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+      [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G],
+    ],
+  },
 ];
 const gridSize = { w: 17, h: 14 };
-const startPoint = [0, 13];
+
+const usingG = grids[1];
+const gridInUse = usingG.g;
+const startPoint = usingG.startPoint;
 
 let points = [];
 let paths = new Queue();
 (function createGrid() {
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      points.push(new Point(j, i, grid[i][j]));
+  for (let i = 0; i < gridInUse.length; i++) {
+    for (let j = 0; j < gridInUse[i].length; j++) {
+      points.push(new Point(j, i, gridInUse[i][j]));
     }
   }
 })();
@@ -204,7 +231,7 @@ const FPS = 60;
 const settings = {
   fps: FPS,
   fpsInterval: 1000 / FPS,
-  searchPathDrawInterval: 0.05, // in seconds
+  searchPathDrawInterval: 0.5, // in seconds
 };
 
 function new2dCanvas(id, width, height) {
@@ -217,7 +244,7 @@ function new2dCanvas(id, width, height) {
 
 const [canvas, ctx] = new2dCanvas("play-area", 680, 560);
 
-const result = findShortestPath(startPoint, grid);
+const result = findShortestPath(startPoint, gridInUse);
 
 function drawPath() {
   if (!result) return;
