@@ -1,3 +1,5 @@
+const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 680, 560);
+
 const S = "Start",
   E = "Empty",
   O = "Obstacle",
@@ -62,8 +64,7 @@ let paths = new PF.utils.Queue();
 function findShortestPath(startCoordinates, grid) {
   const [x, y] = startCoordinates;
 
-  // Each "location" will store its coordinates
-  // and the shortest path required to arrive there
+  // Each "location" will store its coordinates and the shortest path required to arrive there
   const location = {
     y,
     x,
@@ -114,8 +115,7 @@ function findShortestPath(startCoordinates, grid) {
   return false;
 }
 
-// This function will check a location's status
-// (a location is "valid" if it is on the grid, is not an "obstacle",
+// Will check a location's status (a location is "valid" if it is on the grid, is not an "obstacle",
 // and has not yet been visited by our algorithm)
 // Returns "Valid", "Invalid", "Blocked", or "Goal"
 function locationStatus(location, grid) {
@@ -128,17 +128,28 @@ function locationStatus(location, grid) {
   else return "Valid";
 }
 
-// Explores the grid from the given location in the given
-// direction
+function moveInDirection(location, dir) {
+  let { x, y } = location;
+  switch (dir) {
+    case "North":
+      return { x, y: --y };
+    case "South":
+      return { x, y: ++y };
+    case "East":
+      return { x: ++x, y };
+    case "West":
+      return { x: --x, y };
+    default:
+      break;
+  }
+}
+
+// Explores the grid from the given location in the given direction
 function exploreInDirection(currentLocation, direction, grid) {
   const newPath = currentLocation.path.slice();
   newPath.push(direction);
 
-  let { x, y } = currentLocation;
-  if (direction === "North") y--;
-  else if (direction === "South") y++;
-  else if (direction === "West") x--;
-  else if (direction === "East") x++;
+  let { x, y } = moveInDirection(currentLocation, direction);
 
   const next = {
     x,
@@ -152,16 +163,6 @@ function exploreInDirection(currentLocation, direction, grid) {
   if (next.status === "Valid") grid[next.y][next.x] = "Visited";
   return next;
 }
-
-function new2dCanvas(id, width, height) {
-  const canvas = document.getElementById(id);
-  const ctx = canvas.getContext("2d");
-  canvas.width = width;
-  canvas.height = height;
-  return [canvas, ctx];
-}
-
-const [canvas, ctx] = new2dCanvas("play-area", 680, 560);
 
 const result = findShortestPath(startPoint, gridInUse);
 
@@ -182,22 +183,7 @@ function drawPath() {
   );
   currentStep++;
   result.forEach((path) => {
-    switch (path) {
-      case "North":
-        y--;
-        break;
-      case "South":
-        y++;
-        break;
-      case "East":
-        x++;
-        break;
-      case "West":
-        x--;
-        break;
-      default:
-        break;
-    }
+    ({ x, y } = moveInDirection({ x, y }, path));
     ctx.fillText(
       currentStep,
       x * squareSize + squareSize / 2,
