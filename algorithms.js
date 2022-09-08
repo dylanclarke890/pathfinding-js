@@ -1,4 +1,3 @@
-var ALGO = ALGO || {};
 class Queue {
   get size() {
     return this.arr.length;
@@ -25,28 +24,51 @@ class Queue {
   }
 }
 
+class Point {
+  constructor(x, y, status = "Empty") {
+    this.x = x;
+    this.y = y;
+    this.status = status;
+    this.squareSize = 40;
+  }
+
+  draw() {
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "grey";
+    const x = this.x * this.squareSize,
+      y = this.y * this.squareSize;
+    ctx.fillRect(x, y, this.squareSize, this.squareSize);
+    ctx.strokeRect(x, y, this.squareSize, this.squareSize);
+  }
+}
+
 // Create a 4x4 grid
 // Represent the grid as a 2-dimensional array
 const gridSize = 4;
 let grid = [];
-for (let i = 0; i < gridSize; i++) {
-  grid[i] = [];
-  for (let j = 0; j < gridSize; j++) {
-    grid[i][j] = "Empty";
+let points = [];
+(function createGrid() {
+  for (let i = 0; i < gridSize; i++) {
+    grid[i] = [];
+    for (let j = 0; j < gridSize; j++) {
+      grid[i][j] = "Empty";
+      points.push(new Point(j, i));
+    }
   }
-}
 
-// Think of the first index as "distance from the top row"
-// Think of the second index as "distance from the left-most column"
+  // Think of the first index as "distance from the top row"
+  // Think of the second index as "distance from the left-most column"
 
-// This is how we would represent the grid with obstacles above
-grid[0][0] = "Start";
-grid[2][2] = "Goal";
+  // This is how we would represent the grid with obstacles above
+  grid[0][0] = "Start";
+  grid[2][2] = "Goal";
 
-grid[1][1] = "Obstacle";
-grid[1][2] = "Obstacle";
-grid[1][3] = "Obstacle";
-grid[2][1] = "Obstacle";
+  grid[1][1] = "Obstacle";
+  grid[1][2] = "Obstacle";
+  grid[1][3] = "Obstacle";
+  grid[2][1] = "Obstacle";
+})();
 
 // Start location will be in the following format:
 // [distanceFromTop, distanceFromLeft]
@@ -64,33 +86,31 @@ function findShortestPath(startCoordinates, grid) {
   };
 
   // Initialize the queue with the start location already inside
-
-  let queue = new Queue([location]);
+  let q = new Queue([location]);
 
   // Loop through the grid searching for the goal
-  while (queue.size > 0) {
-    // Take the first location off the queue
-    const currentLocation = queue.dequeue();
+  while (q.size > 0) {
+    const currentLocation = q.dequeue();
 
     // Explore North
     const north = exploreInDirection(currentLocation, "North", grid);
     if (north.status === "Goal") return north.path;
-    else if (north.status === "Valid") queue.enqueue(north);
+    else if (north.status === "Valid") q.enqueue(north);
 
     // Explore East
     const east = exploreInDirection(currentLocation, "East", grid);
     if (east.status === "Goal") return east.path;
-    else if (east.status === "Valid") queue.enqueue(east);
+    else if (east.status === "Valid") q.enqueue(east);
 
     // Explore South
     const south = exploreInDirection(currentLocation, "South", grid);
     if (south.status === "Goal") return south.path;
-    else if (south.status === "Valid") queue.enqueue(south);
+    else if (south.status === "Valid") q.enqueue(south);
 
     // Explore West
     const west = exploreInDirection(currentLocation, "West", grid);
     if (west.status === "Goal") return west.path;
-    else if (west.status === "Valid") queue.enqueue(west);
+    else if (west.status === "Valid") q.enqueue(west);
   }
   // No valid path found
   return false;
@@ -158,4 +178,44 @@ function exploreInDirection(currentLocation, direction, grid) {
 
 console.log(findShortestPath([0, 0], grid));
 
-ALGO.breadthFirst = findShortestPath;
+const FPS = 60;
+const settings = {
+  fps: FPS,
+  fpsInterval: 1000 / FPS,
+};
+
+function new2dCanvas(id, width, height) {
+  const canvas = document.getElementById(id);
+  const ctx = canvas.getContext("2d");
+  canvas.width = width;
+  canvas.height = height;
+  return [canvas, ctx];
+}
+
+const [canvas, ctx] = new2dCanvas("play-area", 700, 560);
+
+function update() {
+  for (let i = 0; i < points.length; i++) {
+    points[i].draw();
+  }
+}
+
+let stop = false,
+  now,
+  lastFrame;
+
+(function startAnimating() {
+  lastFrame = window.performance.now();
+  animate();
+})();
+
+function animate(newtime) {
+  if (stop) return;
+  requestAnimationFrame(animate);
+  now = newtime;
+  const elapsed = now - lastFrame;
+  if (elapsed > settings.fpsInterval) {
+    lastFrame = now - (elapsed % settings.fpsInterval);
+    update();
+  }
+}
