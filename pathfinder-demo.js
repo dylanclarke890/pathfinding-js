@@ -153,13 +153,6 @@ function exploreInDirection(currentLocation, direction, grid) {
   return next;
 }
 
-const FPS = 60;
-const settings = {
-  fps: FPS,
-  fpsInterval: 1000 / FPS,
-  searchPathDrawInterval: 0.5, // in seconds
-};
-
 function new2dCanvas(id, width, height) {
   const canvas = document.getElementById(id);
   const ctx = canvas.getContext("2d");
@@ -217,7 +210,8 @@ function drawPath() {
 let frame = 0;
 let drawnPaths = [];
 function drawSearchPath() {
-  const interval = settings.fps * settings.searchPathDrawInterval;
+  const { fps, searchPathDrawInterval } = PF.settings;
+  const interval = fps * searchPathDrawInterval;
   if (frame % interval === 0) {
     drawnPaths.push(paths.dequeue());
   }
@@ -251,8 +245,8 @@ function animate(newtime) {
   requestAnimationFrame(animate);
   now = newtime;
   const elapsed = now - lastFrame;
-  if (elapsed > settings.fpsInterval) {
-    lastFrame = now - (elapsed % settings.fpsInterval);
+  if (elapsed > PF.settings.fpsInterval) {
+    lastFrame = now - (elapsed % PF.settings.fpsInterval);
     update();
   }
 }
