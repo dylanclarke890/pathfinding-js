@@ -1,75 +1,3 @@
-class Queue {
-  get size() {
-    return this.arr.length;
-  }
-
-  constructor(/** @type {any[]} */ arr) {
-    this.arr = arr || [];
-  }
-
-  head() {
-    return this.arr[0];
-  }
-
-  enqueue(val) {
-    this.arr.push(val);
-  }
-
-  dequeue() {
-    return this.arr.shift();
-  }
-
-  tail() {
-    return this.arr[this.arr.length - 1];
-  }
-}
-
-const SQUARESIZE = 40;
-
-class Point {
-  static colors = {
-    Start: "yellow",
-    Empty: "white",
-    Obstacle: "black",
-    Goal: "gold",
-  };
-
-  constructor(x, y, status) {
-    this.x = x;
-    this.y = y;
-    this.status = status;
-    this.squareSize = SQUARESIZE;
-  }
-
-  draw() {
-    ctx.fillStyle = Point.colors[this.status];
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "grey";
-    const x = this.x * this.squareSize,
-      y = this.y * this.squareSize;
-    ctx.fillRect(x, y, this.squareSize, this.squareSize);
-    ctx.strokeRect(x, y, this.squareSize, this.squareSize);
-  }
-}
-
-class Path {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.squareSize = SQUARESIZE;
-  }
-
-  draw() {
-    ctx.fillStyle = "lightblue";
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "grey";
-    const x = this.x * this.squareSize,
-      y = this.y * this.squareSize;
-    ctx.fillRect(x, y, this.squareSize, this.squareSize);
-    ctx.strokeRect(x, y, this.squareSize, this.squareSize);
-  }
-}
-
 const S = "Start",
   E = "Empty",
   O = "Obstacle",
@@ -122,11 +50,11 @@ const gridInUse = usingG.g;
 const startPoint = usingG.startPoint;
 
 let points = [];
-let paths = new Queue();
+let paths = new PF.utils.Queue();
 (function createGrid() {
   for (let i = 0; i < gridInUse.length; i++) {
     for (let j = 0; j < gridInUse[i].length; j++) {
-      points.push(new Point(j, i, gridInUse[i][j]));
+      points.push(new PF.utils.Point(j, i, gridInUse[i][j]));
     }
   }
 })();
@@ -145,7 +73,7 @@ function findShortestPath(startCoordinates, grid) {
   };
 
   // Initialize the queue with the start location already inside
-  let q = new Queue([location]);
+  let q = new PF.utils.Queue([location]);
 
   // Loop through the grid searching for the goal
 
@@ -157,7 +85,7 @@ function findShortestPath(startCoordinates, grid) {
     if (north.status === "Goal") return north.path;
     else if (north.status === "Valid") {
       q.enqueue(north);
-      paths.enqueue(new Path(north.x, north.y));
+      paths.enqueue(new PF.utils.Path(north.x, north.y));
     }
 
     // Explore East
@@ -165,7 +93,7 @@ function findShortestPath(startCoordinates, grid) {
     if (east.status === "Goal") return east.path;
     else if (east.status === "Valid") {
       q.enqueue(east);
-      paths.enqueue(new Path(east.x, east.y));
+      paths.enqueue(new PF.utils.Path(east.x, east.y));
     }
 
     // Explore South
@@ -173,7 +101,7 @@ function findShortestPath(startCoordinates, grid) {
     if (south.status === "Goal") return south.path;
     else if (south.status === "Valid") {
       q.enqueue(south);
-      paths.enqueue(new Path(south.x, south.y));
+      paths.enqueue(new PF.utils.Path(south.x, south.y));
     }
 
     // Explore West
@@ -181,7 +109,7 @@ function findShortestPath(startCoordinates, grid) {
     if (west.status === "Goal") return west.path;
     else if (west.status === "Valid") {
       q.enqueue(west);
-      paths.enqueue(new Path(west.x, west.y));
+      paths.enqueue(new PF.utils.Path(west.x, west.y));
     }
   }
   // No valid path found
@@ -248,6 +176,7 @@ const result = findShortestPath(startPoint, gridInUse);
 
 function drawPath() {
   if (!result) return;
+  const { squareSize } = PF.settings;
 
   let [x, y] = startPoint;
   let currentStep = 0;
@@ -257,8 +186,8 @@ function drawPath() {
   ctx.fillStyle = "green";
   ctx.fillText(
     currentStep,
-    x * SQUARESIZE + SQUARESIZE / 2,
-    y * SQUARESIZE + SQUARESIZE / 2
+    x * squareSize + squareSize / 2,
+    y * squareSize + squareSize / 2
   );
   currentStep++;
   result.forEach((path) => {
@@ -280,8 +209,8 @@ function drawPath() {
     }
     ctx.fillText(
       currentStep,
-      x * SQUARESIZE + SQUARESIZE / 2,
-      y * SQUARESIZE + SQUARESIZE / 2
+      x * squareSize + squareSize / 2,
+      y * squareSize + squareSize / 2
     );
     currentStep++;
   });
