@@ -25,7 +25,14 @@ class Queue {
 }
 
 class Point {
-  constructor(x, y, status = "Empty") {
+  static colors = {
+    Start: "yellow",
+    Empty: "white",
+    Obstacle: "black",
+    Goal: "gold",
+  };
+
+  constructor(x, y, status) {
     this.x = x;
     this.y = y;
     this.status = status;
@@ -33,7 +40,7 @@ class Point {
   }
 
   draw() {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = Point.colors[this.status];
     ctx.lineWidth = 2;
     ctx.strokeStyle = "grey";
     const x = this.x * this.squareSize,
@@ -43,44 +50,37 @@ class Point {
   }
 }
 
-// Create a 4x4 grid
-// Represent the grid as a 2-dimensional array
-const gridSize = 4;
-let grid = [];
+const S = "Start",
+  E = "Empty",
+  O = "Obstacle",
+  G = "Goal";
+
+const gridSize = { w: 4, h: 4 };
+const grid = [
+  [S, E, E, E],
+  [E, O, O, O],
+  [E, O, G, E],
+  [E, E, E, E],
+];
 let points = [];
+
 (function createGrid() {
-  for (let i = 0; i < gridSize; i++) {
-    grid[i] = [];
-    for (let j = 0; j < gridSize; j++) {
-      grid[i][j] = "Empty";
-      points.push(new Point(j, i));
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      points.push(new Point(j, i, grid[i][j]));
     }
   }
-
-  // Think of the first index as "distance from the top row"
-  // Think of the second index as "distance from the left-most column"
-
-  // This is how we would represent the grid with obstacles above
-  grid[0][0] = "Start";
-  grid[2][2] = "Goal";
-
-  grid[1][1] = "Obstacle";
-  grid[1][2] = "Obstacle";
-  grid[1][3] = "Obstacle";
-  grid[2][1] = "Obstacle";
 })();
 
 // Start location will be in the following format:
-// [distanceFromTop, distanceFromLeft]
 function findShortestPath(startCoordinates, grid) {
-  const distanceFromTop = startCoordinates[0];
-  const distanceFromLeft = startCoordinates[1];
+  const [x, y] = startCoordinates;
 
   // Each "location" will store its coordinates
   // and the shortest path required to arrive there
   const location = {
-    distanceFromTop: distanceFromTop,
-    distanceFromLeft: distanceFromLeft,
+    y,
+    x,
     path: [],
     status: "Start",
   };
@@ -121,26 +121,13 @@ function findShortestPath(startCoordinates, grid) {
 // and has not yet been visited by our algorithm)
 // Returns "Valid", "Invalid", "Blocked", or "Goal"
 function locationStatus(location, grid) {
-  const gridSize = grid.length;
-  const dft = location.distanceFromTop;
-  const dfl = location.distanceFromLeft;
-
-  if (
-    location.distanceFromLeft < 0 ||
-    location.distanceFromLeft >= gridSize ||
-    location.distanceFromTop < 0 ||
-    location.distanceFromTop >= gridSize
-  ) {
-    // location is not on the grid--return false
-    return "Invalid";
-  } else if (grid[dft][dfl] === "Goal") {
-    return "Goal";
-  } else if (grid[dft][dfl] !== "Empty") {
-    // location is either an obstacle or has been visited
-    return "Blocked";
-  } else {
-    return "Valid";
-  }
+  const { x, y } = location;
+  // location is not on the grid--return false
+  if (x < 0 || x >= gridSize.w || y < 0 || y >= gridSize.h) return "Invalid";
+  else if (grid[y][x] === "Goal") return "Goal";
+  // location is either an obstacle or has been visited
+  else if (grid[y][x] !== "Empty") return "Blocked";
+  else return "Valid";
 }
 
 // Explores the grid from the given location in the given
@@ -149,34 +136,24 @@ function exploreInDirection(currentLocation, direction, grid) {
   const newPath = currentLocation.path.slice();
   newPath.push(direction);
 
-  let dft = currentLocation.distanceFromTop;
-  let dfl = currentLocation.distanceFromLeft;
+  let { x, y } = currentLocation;
+  if (direction === "North") y--;
+  else if (direction === "South") y++;
+  else if (direction === "West") x--;
+  else if (direction === "East") x++;
 
-  if (direction === "North") dft -= 1;
-  else if (direction === "East") dfl += 1;
-  else if (direction === "South") dft += 1;
-  else if (direction === "West") dfl -= 1;
-
-  const newLocation = {
-    distanceFromTop: dft,
-    distanceFromLeft: dfl,
+  const next = {
+    y,
+    x,
     path: newPath,
     status: "Unknown",
   };
-  newLocation.status = locationStatus(newLocation, grid);
+  next.status = locationStatus(next, grid);
 
   // If this new location is valid, mark it as 'Visited'
-  if (newLocation.status === "Valid")
-    grid[newLocation.distanceFromTop][newLocation.distanceFromLeft] = "Visited";
-
-  return newLocation;
+  if (next.status === "Valid") grid[next.y][next.x] = "Visited";
+  return next;
 }
-
-// OK. We have the functions we need--let's run them to get our shortest path!
-// Think of the first index as "distance from the top row"
-// Think of the second index as "distance from the left-most column"
-
-console.log(findShortestPath([0, 0], grid));
 
 const FPS = 60;
 const settings = {
@@ -193,6 +170,8 @@ function new2dCanvas(id, width, height) {
 }
 
 const [canvas, ctx] = new2dCanvas("play-area", 700, 560);
+
+const result = findShortestPath([0, 0], grid);
 
 function update() {
   for (let i = 0; i < points.length; i++) {
