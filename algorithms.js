@@ -94,7 +94,7 @@ const grid = [
 const gridSize = { w: 17, h: 14 };
 
 let points = [];
-let paths = [];
+let paths = new Queue();
 (function createGrid() {
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -129,7 +129,7 @@ function findShortestPath(startCoordinates, grid) {
     if (north.status === "Goal") return north.path;
     else if (north.status === "Valid") {
       q.enqueue(north);
-      paths.push(new Path(north.x, north.y));
+      paths.enqueue(new Path(north.x, north.y));
     }
 
     // Explore East
@@ -137,7 +137,7 @@ function findShortestPath(startCoordinates, grid) {
     if (east.status === "Goal") return east.path;
     else if (east.status === "Valid") {
       q.enqueue(east);
-      paths.push(new Path(east.x, east.y));
+      paths.enqueue(new Path(east.x, east.y));
     }
 
     // Explore South
@@ -145,7 +145,7 @@ function findShortestPath(startCoordinates, grid) {
     if (south.status === "Goal") return south.path;
     else if (south.status === "Valid") {
       q.enqueue(south);
-      paths.push(new Path(south.x, south.y));
+      paths.enqueue(new Path(south.x, south.y));
     }
 
     // Explore West
@@ -153,7 +153,7 @@ function findShortestPath(startCoordinates, grid) {
     if (west.status === "Goal") return west.path;
     else if (west.status === "Valid") {
       q.enqueue(west);
-      paths.push(new Path(west.x, west.y));
+      paths.enqueue(new Path(west.x, west.y));
     }
   }
   // No valid path found
@@ -203,6 +203,7 @@ const FPS = 60;
 const settings = {
   fps: FPS,
   fpsInterval: 1000 / FPS,
+  searchPathDrawInterval: 0.05, // in seconds
 };
 
 function new2dCanvas(id, width, height) {
@@ -255,14 +256,27 @@ function drawPath() {
   });
 }
 
+let frame = 0;
+let drawnPaths = [];
+function drawSearchPath() {
+  const interval = settings.fps * settings.searchPathDrawInterval;
+  if (frame % interval === 0) {
+    drawnPaths.push(paths.dequeue());
+  }
+}
+
 function update() {
   for (let i = 0; i < points.length; i++) {
     points[i].draw();
   }
-  for (let i = 0; i < paths.length; i++) {
-    paths[i].draw();
+  for (let i = 0; i < drawnPaths.length; i++) {
+    if (drawnPaths[i]) drawnPaths[i].draw();
   }
-  drawPath();
+  drawSearchPath();
+  if (paths.size === 0) {
+    drawPath();
+  }
+  frame++;
 }
 
 let stop = false,
