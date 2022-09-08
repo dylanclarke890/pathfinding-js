@@ -78,3 +78,19 @@ PF.utils.new2dCanvas = function (id, width, height) {
   canvas.height = height;
   return [canvas, ctx];
 };
+
+PF.utils.moveInDirection = function (location, dir) {
+  let { x, y } = location;
+  switch (dir) {
+    case "North":
+      return { x, y: --y };
+    case "South":
+      return { x, y: ++y };
+    case "East":
+      return { x: ++x, y };
+    case "West":
+      return { x: --x, y };
+    default:
+      break;
+  }
+};

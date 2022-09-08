@@ -5,5 +5,5 @@ PF.settings = {
   fps: FPS,
   fpsInterval: 1000 / FPS,
   squareSize: 40,
-  searchPathDrawInterval: 0.5, // in seconds
+  searchPathDrawInterval: 0.1, // in seconds
 };
