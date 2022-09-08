@@ -57,15 +57,25 @@ const S = "Start",
   O = "Obstacle",
   G = "Goal";
 
-const gridSize = { w: 4, h: 4 };
 const grid = [
-  [S, E, E, E],
-  [E, O, E, O],
-  [E, O, G, E],
-  [E, E, E, E],
+  [S, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, O, O, E, O, O, E, E, E, E, E, E],
+  [E, E, E, E, E, O, E, E, O, E, E, O, E, E, E, E, E],
+  [E, E, E, E, E, O, E, E, E, E, E, O, E, E, E, E, E],
+  [E, E, E, E, E, E, O, E, E, E, O, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, O, E, O, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, O, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G],
 ];
-let points = [];
+const gridSize = { w: 17, h: 14 };
 
+let points = [];
 (function createGrid() {
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -106,6 +116,7 @@ function findShortestPath(startCoordinates, grid) {
 
     // Explore South
     const south = exploreInDirection(currentLocation, "South", grid);
+    console.log(south);
     if (south.status === "Goal") return south.path;
     else if (south.status === "Valid") q.enqueue(south);
 
@@ -145,8 +156,8 @@ function exploreInDirection(currentLocation, direction, grid) {
   else if (direction === "East") x++;
 
   const next = {
-    y,
     x,
+    y,
     path: newPath,
     status: "Unknown",
   };
@@ -171,7 +182,7 @@ function new2dCanvas(id, width, height) {
   return [canvas, ctx];
 }
 
-const [canvas, ctx] = new2dCanvas("play-area", 700, 560);
+const [canvas, ctx] = new2dCanvas("play-area", 680, 560);
 
 const startPoint = [0, 0];
 const result = findShortestPath(startPoint, grid);
@@ -184,11 +195,10 @@ function drawPath() {
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillStyle = "purple";
+  ctx.fillStyle = "green";
   ctx.fillText(currentStep, x + SQUARESIZE / 2, y + SQUARESIZE / 2);
   currentStep++;
   result.forEach((path) => {
-    console.log(path);
     switch (path) {
       case "North":
         y--;
