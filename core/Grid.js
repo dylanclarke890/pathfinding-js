@@ -70,13 +70,13 @@ PF.Grid = class {
    * @param {number} h
    * @param {Array<Array<number|boolean>>} [matrix] - A 0-1 matrix representing
    * the walkable status of the nodes.
-   * @see Grid
+   * @see PF.Grid
    */
   #constructNodes(w, h, matrix) {
     const nodes = new Array(h);
     for (let i = 0; i < h; i++) {
       nodes[i] = new Array(w);
-      for (let j = 0; j < w; j++) nodes[i][j] = new Node(j, i);
+      for (let j = 0; j < w; j++) nodes[i][j] = new PF.Node(j, i);
     }
 
     if (matrix === undefined) return nodes;
@@ -90,9 +90,11 @@ PF.Grid = class {
 
     return nodes;
   }
+
   getNodeAt(x, y) {
     return this.nodes[y][x];
   }
+
   /**
    * Determine whether the node at the given position is walkable.
    * (Also returns false if the position is outside the grid.)
@@ -103,6 +105,7 @@ PF.Grid = class {
   isWalkableAt(x, y) {
     return this.containsPosition(x, y) && this.nodes[y][x].walkable;
   }
+
   /**
    * Determine whether the position is inside the grid.
    * @param {number} x - The x coordinate of the node.
@@ -139,7 +142,7 @@ PF.Grid = class {
    *  When allowDiagonal is true, if offsets[i] is valid, then
    *  diagonalOffsets[i] and
    *  diagonalOffsets[(i + 1) % 4] is valid.
-   * @param {Node} node
+   * @param {PF.Node} node
    * @param {DiagonalMovement} diagonalMovement
    */
   getNeighbors(node, diagonalMovement) {
@@ -229,7 +232,7 @@ PF.Grid = class {
     for (let i = 0; i < height; i++) {
       newNodes[i] = new Array(width);
       for (let j = 0; j < width; j++)
-        newNodes[i][j] = new Node(j, i, nodes[i][j].walkable);
+        newNodes[i][j] = new PF.Node(j, i, nodes[i][j].walkable);
     }
     newGrid.nodes = newNodes;
 
