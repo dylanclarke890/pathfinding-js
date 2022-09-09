@@ -170,6 +170,16 @@ function _siftup(array, pos, cmp) {
   return _siftdown(array, startpos, pos, cmp);
 }
 
+function __range__(left, right, inclusive) {
+  let range = [];
+  let ascending = left < right;
+  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+    range.push(i);
+  }
+  return range;
+}
+
 PF.utils.Heap = class {
   constructor(cmp) {
     cmp = cmp || defaultComparer;
@@ -250,14 +260,4 @@ PF.utils.Heap = class {
   toArray() {
     return this.nodes.slice(0);
   }
-}
-
-function __range__(left, right, inclusive) {
-  let range = [];
-  let ascending = left < right;
-  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
-  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    range.push(i);
-  }
-  return range;
 }
