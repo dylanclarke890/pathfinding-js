@@ -1,3 +1,6 @@
+var PF = PF || {};
+PF.Algorithms = PF.Algorithms || {};
+
 /**
  * Dijkstra path-finder.
  * @constructor
