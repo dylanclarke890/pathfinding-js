@@ -1,13 +1,13 @@
-/**
- * @constructor
- * @param {Object} opt
- * @param {DiagonalMovement} opt.diagonalMovement Allowed diagonal movement. Defaults to "Never".
- * @param {function} opt.heuristic Heuristic function to estimate the distance.
- * (Defaults to "manhattan".
- * @param {number} opt.weight Weight to apply to the heuristic to allow for
- *     suboptimal paths, in order to speed up the search.
- */
 PF.Algorithms.AStar = class {
+  /** A* path finder.
+   * @constructor
+   * @param {Object} opt
+   * @param {DiagonalMovement} opt.diagonalMovement Allowed diagonal movement. Defaults to "Never".
+   * @param {function} opt.heuristic Heuristic function to estimate the distance.
+   * (Defaults to "manhattan".
+   * @param {number} opt.weight Weight to apply to the heuristic to allow for
+   *     suboptimal paths, in order to speed up the search.
+   */
   constructor(opt) {
     opt = opt || {};
     this.heuristic = opt.heuristic || PF.Heuristic.manhattan;
