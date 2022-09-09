@@ -1,6 +1,8 @@
 var PF = PF || {};
 PF.Algorithms = PF.Algorithms || {};
 
+// TODO : Fix pathing bug.
+
 /**
  * Iterative Deeping A Star (IDA*) path-finder.
  * @constructor
