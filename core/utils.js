@@ -111,7 +111,7 @@ PF.utils.new2dCanvas = function (id, width, height) {
  /**
   * Smoothen the given path.
   * The original path will not be modified, a new path will be returned.
-  * @param {PF.Grid} grid
+  * @param {PF.Data.Grid} grid
   * @param {Array<Array<number>>} path The path
   */
   PF.utils.smoothenPath = function (grid, path) {

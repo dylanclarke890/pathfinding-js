@@ -2,9 +2,9 @@ const matrix = Array.from({ length: 15 }, () =>
   Array.from({ length: 15 }, () => 0)
 );
 
-let searched = new PF.utils.Queue();
+let searched = new PF.Data.Queue();
 const grid = PF.utils.interceptGridOperations(
-  new PF.Grid(matrix),
+  new PF.Data.Grid(matrix),
   function (fnName, _, res) {
     if (fnName !== "getNeighbors") return;
     for (let i = 0; i < res.length; i++)

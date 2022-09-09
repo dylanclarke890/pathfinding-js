@@ -180,7 +180,7 @@ function __range__(left, right, inclusive) {
   return range;
 }
 
-PF.utils.Heap = class {
+PF.Heap = class {
   constructor(cmp) {
     cmp = cmp || defaultComparer;
     this.cmp = cmp;
@@ -260,4 +260,4 @@ PF.utils.Heap = class {
   toArray() {
     return this.nodes.slice(0);
   }
-}
+};
