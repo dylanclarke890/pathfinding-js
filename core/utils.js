@@ -25,6 +25,10 @@ PF.utils.Queue = class {
   tail() {
     return this.arr[this.arr.length - 1];
   }
+
+  contains(v) {
+    return this.arr.includes(v);
+  }
 };
 
 PF.utils.Point = class {
@@ -200,91 +204,111 @@ PF.utils.moveInDirection = function (location, dir) {
   * @param {PF.Grid} grid
   * @param {Array<Array<number>>} path The path
   */
- function smoothenPath(grid, path) {
-   const start = path[0]; // path start coords.
-   let sx = start[0],
-     sy = start[1];
-   const newPath = [[sx, sy]];
+  PF.utils.smoothenPath = function (grid, path) {
+    const start = path[0]; // path start coords.
+    let sx = start[0],
+      sy = start[1];
+    const newPath = [[sx, sy]];
 
-   for (let i = 2; i < path.length; ++i) {
-     let currCoords = path[i];
-     let ex = currCoords[0];
-     let ey = currCoords[1];
-     const line = interpolate(sx, sy, ex, ey);
+    for (let i = 2; i < path.length; ++i) {
+      let currCoords = path[i];
+      let ex = currCoords[0];
+      let ey = currCoords[1];
+      const line = interpolate(sx, sy, ex, ey);
 
-     let blocked = false;
-     for (let j = 1; j < line.length; ++j) {
-       let testCoord = line[j];
+      let blocked = false;
+      for (let j = 1; j < line.length; ++j) {
+        let testCoord = line[j];
 
-       if (!grid.isWalkableAt(testCoord[0], testCoord[1])) {
-         blocked = true;
-         break;
-       }
-     }
-     if (blocked) {
-       let lastValid = path[i - 1];
-       newPath.push(lastValid);
-       sx = lastValid[0];
-       sy = lastValid[1];
-     }
-   }
+        if (!grid.isWalkableAt(testCoord[0], testCoord[1])) {
+          blocked = true;
+          break;
+        }
+      }
+      if (blocked) {
+        let lastValid = path[i - 1];
+        newPath.push(lastValid);
+        sx = lastValid[0];
+        sy = lastValid[1];
+      }
+    }
 
-   const end = path[path.length - 1]; // path end coords.
-   newPath.push([end[0], end[1]]);
+    const end = path[path.length - 1]; // path end coords.
+    newPath.push([end[0], end[1]]);
 
-   return newPath;
- }
+    return newPath;
+  };
 
- /**
-  * Compress a path, remove redundant nodes without altering the shape
-  * The original path is not modified
-  * @param {Array<Array<number>>} path The path
-  * @return {Array<Array<number>>} The compressed path
-  */
- function compressPath(path) {
-   if (path.length < 3) return path; // nothing to compress
+  /**
+   * Compress a path, remove redundant nodes without altering the shape
+   * The original path is not modified
+   * @param {Array<Array<number>>} path The path
+   * @return {Array<Array<number>>} The compressed path
+   */
+  PF.utils.compressPath = function (path) {
+    if (path.length < 3) return path; // nothing to compress
 
-   let
-     sx = path[0][0], // start x
-     sy = path[0][1], // start y
-     px = path[1][0], // second point x
-     py = path[1][1], // second point y
-     dx = px - sx, // direction between the two points
-     dy = py - sy, // direction between the two points
-     sq = Math.sqrt(dx * dx + dy * dy); // normalize the direction
-   
-   // start the new path
-   const compressed = [[sx, sy]];
+    let sx = path[0][0], // start x
+      sy = path[0][1], // start y
+      px = path[1][0], // second point x
+      py = path[1][1], // second point y
+      dx = px - sx, // direction between the two points
+      dy = py - sy, // direction between the two points
+      sq = Math.sqrt(dx * dx + dy * dy); // normalize the direction
 
-   dx /= sq;
-   dy /= sq;
+    // start the new path
+    const compressed = [[sx, sy]];
 
-   for (let i = 2; i < path.length; i++) {
-     // store the last point
-     let lx = px;
-     let ly = py;
+    dx /= sq;
+    dy /= sq;
 
-     // store the last direction
-     let ldx = dx;
-     let ldy = dy;
+    for (let i = 2; i < path.length; i++) {
+      // store the last point
+      let lx = px;
+      let ly = py;
 
-     // next point
-     px = path[i][0];
-     py = path[i][1];
+      // store the last direction
+      let ldx = dx;
+      let ldy = dy;
 
-     // next direction
-     dx = px - lx;
-     dy = py - ly;
+      // next point
+      px = path[i][0];
+      py = path[i][1];
 
-     // normalize
-     sq = Math.sqrt(dx * dx + dy * dy);
-     dx /= sq;
-     dy /= sq;
+      // next direction
+      dx = px - lx;
+      dy = py - ly;
 
-     // if the direction has changed, store the point
-     if (dx !== ldx || dy !== ldy) compressed.push([lx, ly]);
-   }
+      // normalize
+      sq = Math.sqrt(dx * dx + dy * dy);
+      dx /= sq;
+      dy /= sq;
 
-   compressed.push([px, py]); // store the last point
-   return compressed;
- }
+      // if the direction has changed, store the point
+      if (dx !== ldx || dy !== ldy) compressed.push([lx, ly]);
+    }
+
+    compressed.push([px, py]); // store the last point
+    return compressed;
+  };
+
+  /**
+   * Used for the demo. Intercepts method calls to the grid to allow tracking of the search steps
+   * without needing to add the logic to the Grid class itself as in practical applications they aren't
+   * likely to be used.
+   */
+  PF.utils.interceptGridOperations = function (grid, interceptCallback) {
+    return new Proxy(grid, {
+      get(target, prop) {
+        if (typeof target[prop] !== "function")
+          return Reflect.get(target, prop);
+        return new Proxy(target[prop], {
+          apply: (target, thisArg, argumentsList) => {
+            const result = Reflect.apply(target, thisArg, argumentsList);
+            interceptCallback(prop, argumentsList, result);
+            return result;
+          },
+        });
+      },
+    });
+  };

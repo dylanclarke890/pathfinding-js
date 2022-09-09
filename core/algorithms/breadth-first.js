@@ -87,7 +87,7 @@ PF.Algorithms.BreadthFirst = class {
       node.closed = true;
       if (node === endNode) return PF.utils.backtrace(endNode); // reached goal
       const neighbors = grid.getNeighbors(node, this.diagonalMovement);
-      for (let i = 0, l = neighbors.length; i < l; ++i) {
+      for (let i = 0; i < neighbors.length; ++i) {
         const neighbor = neighbors[i];
         if (neighbor.closed || neighbor.opened) continue; // skip if it has been inspected before
         openList.enqueue(neighbor);
