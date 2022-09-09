@@ -7,7 +7,7 @@
  * @param {number} y - The y coordinate of the node on the grid.
  * @param {boolean} [walkable] - Whether this node is walkable.
  */
-class Node {
+PF.Node = class {
   constructor(x, y, walkable) {
     /**
      * The x coordinate of the node on the grid.
@@ -25,7 +25,7 @@ class Node {
      */
     this.walkable = walkable === undefined ? true : walkable;
   }
-}
+};
 
 /**
  * The Grid class, which serves as the encapsulation of the layout of the nodes.
@@ -35,7 +35,7 @@ class Node {
  * @param {Array<Array<(number|boolean)>>} [matrix] - A 0-1 matrix
  * representing the walkable status of the nodes(0 or false for walkable).
  * If the matrix is not supplied, all the nodes will be walkable.  */
-class Grid {
+PF.Grid = class {
   constructor(width_or_matrix, height, matrix) {
     let width;
 
@@ -235,4 +235,4 @@ class Grid {
 
     return newGrid;
   }
-}
+};
