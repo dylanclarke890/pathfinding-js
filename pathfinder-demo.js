@@ -45,15 +45,14 @@ const grids = [
     ],
   },
 ];
-const gridSize = { w: 17, h: 14 };
 
-const usingG = grids[1];
-const gridInUse = usingG.g;
-const startPoint = usingG.startPoint;
+const gridSize = { w: 17, h: 14 };
+const grid = grids[1];
 
 let points = [];
 let paths = new PF.utils.Queue();
 (function createGrid() {
+  const gridInUse = grid.g;
   for (let i = 0; i < gridInUse.length; i++) {
     for (let j = 0; j < gridInUse[i].length; j++) {
       points.push(new PF.utils.Point(j, i, gridInUse[i][j]));
@@ -61,13 +60,13 @@ let paths = new PF.utils.Queue();
   }
 })();
 
-const result = PF.Algorithms.breadthFirst(startPoint, gridInUse);
+const result = PF.Algorithms.breadthFirst(grid.startPoint, grid.g);
 
 function drawPath() {
   if (!result) return;
   const { squareSize } = PF.settings;
 
-  let [x, y] = startPoint;
+  let [x, y] = grid.startPoint;
   let currentStep = 0;
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
@@ -95,22 +94,15 @@ let drawnPaths = [];
 function drawSearchPath() {
   const { fps, searchPathDrawInterval } = PF.settings;
   const interval = fps * searchPathDrawInterval;
-  if (frame % interval === 0) {
-    drawnPaths.push(paths.dequeue());
-  }
+  if (frame % interval === 0) drawnPaths.push(paths.dequeue());
 }
 
 function update() {
-  for (let i = 0; i < points.length; i++) {
-    points[i].draw();
-  }
-  for (let i = 0; i < drawnPaths.length; i++) {
+  for (let i = 0; i < points.length; i++) points[i].draw();
+  for (let i = 0; i < drawnPaths.length; i++)
     if (drawnPaths[i]) drawnPaths[i].draw();
-  }
   drawSearchPath();
-  if (paths.size === 0) {
-    drawPath();
-  }
+  if (paths.size === 0) drawPath();
   frame++;
 }
 
