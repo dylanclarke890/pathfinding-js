@@ -1,27 +1,9 @@
 /*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS201: Simplify complex destructure assignments
- * DS206: Consider reworking classes to avoid initClass
- * DS207: Consider shorter variations of null checks
- * DS208: Avoid top-level this
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
- */
-const { floor, min } = Math;
-
-/*
-Default comparison function to be used
+Default comparison function to fallback to.
 */
-const defaultCmp = function (x, y) {
-  if (x < y) {
-    return -1;
-  }
-  if (x > y) {
-    return 1;
-  }
-  return 0;
-};
+function defaultComparer(x, y) {
+  return x < y ? -1 : x > y ? 1 : 0;
+}
 
 /*
 Insert item x in list a, and keep it sorted assuming a is sorted.
@@ -29,57 +11,40 @@ If x is already in a, insert it to the right of the rightmost x.
 Optional args lo (default 0) and hi (default a.length) bound the slice
 of a to be searched.
 */
-const insort = function (a, x, lo, hi, cmp) {
-  if (lo == null) {
-    lo = 0;
-  }
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
-  if (lo < 0) {
-    throw new Error("lo must be non-negative");
-  }
-  if (hi == null) {
-    hi = a.length;
-  }
+function insort(a, x, lo, hi, cmp) {
+  cmp = cmp || defaultComparer;
+  lo = lo || 0;
+  hi = hi || a.length;
+  if (lo < 0) throw new Error("lo must be non-negative");
   while (lo < hi) {
-    const mid = floor((lo + hi) / 2);
-    if (cmp(x, a[mid]) < 0) {
-      hi = mid;
-    } else {
-      lo = mid + 1;
-    }
+    const mid = Math.floor((lo + hi) / 2);
+    if (cmp(x, a[mid]) < 0) hi = mid;
+    else lo = mid + 1;
   }
   return a.splice(lo, lo - lo, ...[].concat(x)), x;
-};
+}
 
 /*
 Push item onto heap, maintaining the heap invariant.
 */
-const heappush = function (array, item, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+function heappush(array, item, cmp) {
+  cmp = cmp || defaultComparer;
   array.push(item);
   return _siftdown(array, 0, array.length - 1, cmp);
-};
+}
 
 /*
 Pop the smallest item off the heap, maintaining the heap invariant.
 */
 const heappop = function (array, cmp) {
+  cmp = cmp || defaultComparer;
   let returnitem;
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
   const lastelt = array.pop();
   if (array.length) {
     returnitem = array[0];
     array[0] = lastelt;
     _siftup(array, 0, cmp);
-  } else {
-    returnitem = lastelt;
-  }
+  } else returnitem = lastelt;
   return returnitem;
 };
 
@@ -93,9 +58,7 @@ this routine unless written as part of a conditional replacement:
       item = heapreplace(array, item)
 */
 const heapreplace = function (array, item, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+  cmp = cmp || defaultComparer;
   const returnitem = array[0];
   array[0] = item;
   _siftup(array, 0, cmp);
@@ -106,9 +69,7 @@ const heapreplace = function (array, item, cmp) {
 Fast version of a heappush followed by a heappop.
 */
 const heappushpop = function (array, item, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+  cmp = cmp || defaultComparer;
   if (array.length && cmp(array[0], item) < 0) {
     [item, array[0]] = Array.from([array[0], item]);
     _siftup(array, 0, cmp);
@@ -120,12 +81,10 @@ const heappushpop = function (array, item, cmp) {
 Transform list into a heap, in-place, in O(array.length) time.
 */
 const heapify = function (array, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
-  return Array.from(__range__(0, floor(array.length / 2), false).reverse()).map(
-    (i) => _siftup(array, i, cmp)
-  );
+  cmp = cmp || defaultComparer;
+  return __range__(0, Math.floor(array.length / 2), false)
+    .reverse()
+    .map((i) => _siftup(array, i, cmp));
 };
 
 /*
@@ -133,13 +92,9 @@ Update the position of the given item in the heap.
 This function should be called every time the item is being modified.
 */
 const updateItem = function (array, item, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+  cmp = cmp || defaultComparer;
   const pos = array.indexOf(item);
-  if (pos === -1) {
-    return;
-  }
+  if (pos === -1) return;
   _siftdown(array, 0, pos, cmp);
   return _siftup(array, pos, cmp);
 };
@@ -148,17 +103,11 @@ const updateItem = function (array, item, cmp) {
 Find the n largest elements in a dataset.
 */
 const nlargest = function (array, n, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+  cmp = cmp || defaultComparer;
   const result = array.slice(0, n);
-  if (!result.length) {
-    return result;
-  }
+  if (!result.length) return result;
   heapify(result, cmp);
-  for (let elem of Array.from(array.slice(n))) {
-    heappushpop(result, elem, cmp);
-  }
+  for (let elem of array.slice(n)) heappushpop(result, elem, cmp);
   return result.sort(cmp).reverse();
 };
 
@@ -166,16 +115,12 @@ const nlargest = function (array, n, cmp) {
 Find the n smallest elements in a dataset.
 */
 const nsmallest = function (array, n, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+  cmp = cmp || defaultComparer;
   if (n * 10 <= array.length) {
     const result = array.slice(0, n).sort(cmp);
-    if (!result.length) {
-      return result;
-    }
+    if (!result.length) return result;
     let los = result[result.length - 1];
-    for (let elem of Array.from(array.slice(n))) {
+    for (let elem of array.slice(n)) {
       if (cmp(elem, los) < 0) {
         insort(result, elem, 0, null, cmp);
         result.pop();
@@ -186,15 +131,13 @@ const nsmallest = function (array, n, cmp) {
   }
 
   heapify(array, cmp);
-  return __range__(0, min(n, array.length), false).map((i) =>
+  return __range__(0, Math.min(n, array.length), false).map(() =>
     heappop(array, cmp)
   );
 };
 
-var _siftdown = function (array, startpos, pos, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+function _siftdown(array, startpos, pos, cmp) {
+  cmp = cmp || defaultComparer;
   const newitem = array[pos];
   while (pos > startpos) {
     const parentpos = (pos - 1) >> 1;
@@ -207,58 +150,39 @@ var _siftdown = function (array, startpos, pos, cmp) {
     break;
   }
   return (array[pos] = newitem);
-};
+}
 
-var _siftup = function (array, pos, cmp) {
-  if (cmp == null) {
-    cmp = defaultCmp;
-  }
+function _siftup(array, pos, cmp) {
+  cmp = cmp || defaultComparer;
   const endpos = array.length;
   const startpos = pos;
   const newitem = array[pos];
   let childpos = 2 * pos + 1;
   while (childpos < endpos) {
     const rightpos = childpos + 1;
-    if (rightpos < endpos && !(cmp(array[childpos], array[rightpos]) < 0)) {
+    if (rightpos < endpos && !(cmp(array[childpos], array[rightpos]) < 0))
       childpos = rightpos;
-    }
     array[pos] = array[childpos];
     pos = childpos;
     childpos = 2 * pos + 1;
   }
   array[pos] = newitem;
   return _siftdown(array, startpos, pos, cmp);
-};
+}
 
-class Heap {
-  static initClass() {
-    this.push = heappush;
-    this.pop = heappop;
-    this.replace = heapreplace;
-    this.pushpop = heappushpop;
-    this.heapify = heapify;
-    this.updateItem = updateItem;
-    this.nlargest = nlargest;
-    this.nsmallest = nsmallest;
-
-    // aliases
-    this.prototype.insert = this.prototype.push;
-    this.prototype.top = this.prototype.peek;
-    this.prototype.front = this.prototype.peek;
-    this.prototype.has = this.prototype.contains;
-    this.prototype.copy = this.prototype.clone;
-  }
-
+PF.utils.Heap = class {
   constructor(cmp) {
-    if (cmp == null) {
-      cmp = defaultCmp;
-    }
+    cmp = cmp || defaultComparer;
     this.cmp = cmp;
     this.nodes = [];
   }
 
   push(x) {
     return heappush(this.nodes, x, this.cmp);
+  }
+
+  insert(x) {
+    return this.push(x);
   }
 
   pop() {
@@ -269,8 +193,20 @@ class Heap {
     return this.nodes[0];
   }
 
+  top() {
+    return this.peek();
+  }
+
+  front() {
+    return this.peek();
+  }
+
   contains(x) {
     return this.nodes.indexOf(x) !== -1;
+  }
+
+  has(x) {
+    return this.contains(x);
   }
 
   replace(x) {
@@ -307,22 +243,14 @@ class Heap {
     return heap;
   }
 
+  copy() {
+    return this.clone();
+  }
+
   toArray() {
     return this.nodes.slice(0);
   }
 }
-Heap.initClass();
-
-// exports to global
-(function (root, factory) {
-  if (typeof define === "function" && define.amd) {
-    return define([], factory);
-  } else if (typeof exports === "object") {
-    return (module.exports = factory());
-  } else {
-    return (root.Heap = factory());
-  }
-})(this, () => Heap);
 
 function __range__(left, right, inclusive) {
   let range = [];
