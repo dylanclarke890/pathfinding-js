@@ -6,9 +6,17 @@ let searched = new PF.Data.Queue();
 const grid = PF.utils.interceptGridOperations(
   new PF.Data.Grid(matrix),
   function (fnName, _, res) {
-    if (fnName !== "getNeighbors") return;
-    for (let i = 0; i < res.length; i++)
-      if (!searched.contains(res[i])) searched.enqueue(res[i]);
+    switch (fnName) {
+      case "getNeighbors":
+        for (let i = 0; i < res.length; i++)
+          if (!searched.contains(res[i])) searched.enqueue(res[i]);
+        break;
+      case "getNodeAt":
+        if (!searched.contains(res)) searched.enqueue(res);
+        break;
+      default:
+        return;
+    }
   }
 );
 
