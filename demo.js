@@ -2,6 +2,36 @@ const matrix = Array.from({ length: 15 }, () =>
   Array.from({ length: 15 }, () => 0)
 );
 
+const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
+let canvasPosition = canvas.getBoundingClientRect();
+
+const mouse = {
+  x: 0,
+  y: 0,
+  w: 0.1,
+  h: 0.1,
+};
+
+const setMousePosition = (e) => {
+  mouse.x = e.x - (canvasPosition.left + 6);
+  mouse.y = e.y - canvasPosition.top;
+};
+
+canvas.addEventListener("mousemove", (e) => {
+  setMousePosition(e);
+});
+
+window.addEventListener("resize", () => {
+  canvasPosition = canvas.getBoundingClientRect();
+});
+
+canvas.addEventListener("click", (e) => {
+  setMousePosition(e);
+  const x = Math.floor(mouse.x / PF.settings.squareSize),
+    y = Math.floor(mouse.y / PF.settings.squareSize);
+  matrix[x][y] = matrix[x][y] === 1 ? 0 : 1;
+});
+
 let searched = new PF.Data.Queue();
 const grid = PF.utils.interceptGridOperations(
   new PF.Data.Grid(matrix),
@@ -31,16 +61,28 @@ const finder = new PF.Algorithms.BiBestFirst({
 });
 const result = finder.findPath(sx, sy, ex, ey, grid);
 
-const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
-
+let obstacles = [];
 function drawGrid() {
   ctx.strokeStyle = "grey";
+  ctx.fillStyle = "white";
+  obstacles = [];
   for (let i = 0; i < matrix.length; i++)
     for (let j = 0; j < matrix[i].length; j++) {
-      ctx.fillStyle = matrix[j][i] ? "blue" : "white";
-      ctx.fillRect(j * size, i * size, size, size);
-      ctx.strokeRect(j * size, i * size, size, size);
+      if (matrix[j][i]) obstacles.push([j, i]);
+      else {
+        ctx.fillRect(j * size, i * size, size, size);
+        ctx.strokeRect(j * size, i * size, size, size);
+      }
     }
+}
+
+function drawObstacles() {
+  ctx.fillStyle = "blue";
+  for (let i = 0; i < obstacles.length; i++) {
+    const [x, y] = obstacles[i];
+    ctx.fillRect(x * size, y * size, size, size);
+    ctx.strokeRect(x * size, y * size, size, size);
+  }
 }
 
 let drawn = [];
@@ -79,6 +121,7 @@ function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
   drawSearchPath();
+  drawObstacles();
   if (!searched.size) drawPath();
   drawPoints();
   frame++;
