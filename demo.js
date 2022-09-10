@@ -16,7 +16,7 @@ const size = PF.settings.squareSize;
 const sx = 0,
   sy = 0;
 
-const finder = new PF.Algorithms.JumpPoint();
+const finder = new PF.Algorithms.JumpPoint(PF.DiagonalMovement.Always);
 const result = finder.findPath(sx, sy, 14, 14, grid);
 
 const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
