@@ -12,6 +12,20 @@ const mouse = {
   h: 0.1,
 };
 
+const buttons = [
+  new PF.UI.Button({
+    x: 40,
+    y: 80,
+    w: 100,
+    h: 40,
+    font: "20px Arial",
+    text: "Start",
+    textColor: "white",
+    bgColor: "black",
+    onClick: (e) => console.log(e),
+  }),
+];
+
 const setMousePosition = (e) => {
   mouse.x = e.x - (canvasPosition.left + 6);
   mouse.y = e.y - canvasPosition.top;
@@ -30,6 +44,10 @@ canvas.addEventListener("click", (e) => {
   const x = Math.floor(mouse.x / PF.settings.squareSize),
     y = Math.floor(mouse.y / PF.settings.squareSize);
   matrix[x][y] = matrix[x][y] === 1 ? 0 : 1;
+
+  for (let i = 0; i < buttons.length; i++) {
+    const { x, y, w, h } = buttons[i];
+  }
 });
 
 let searched = new PF.Data.Queue();
@@ -85,6 +103,12 @@ function drawObstacles() {
   }
 }
 
+function drawUI() {
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].draw();
+  }
+}
+
 let drawn = [];
 let frame = 0;
 const drawInterval = 0.05 * PF.settings.fps;
@@ -124,6 +148,7 @@ function update() {
   drawObstacles();
   if (!searched.size) drawPath();
   drawPoints();
+  drawUI();
   frame++;
 }
 
