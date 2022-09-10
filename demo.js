@@ -1,6 +1,8 @@
 const matrix = Array.from({ length: 15 }, () =>
   Array.from({ length: 15 }, () => 0)
 );
+matrix[1][1] = 1;
+matrix[3][1] = 1;
 
 let searched = new PF.Data.Queue();
 const grid = PF.utils.interceptGridOperations(
@@ -17,7 +19,7 @@ const sx = 0,
   sy = 0;
 
 const finder = new PF.Algorithms.JumpPoint(
-  PF.DiagonalMovement.OnlyWhenNoObstacles
+  PF.DiagonalMovement.IfAtMostOneObstacle
 );
 const result = finder.findPath(sx, sy, 14, 14, grid);
 
