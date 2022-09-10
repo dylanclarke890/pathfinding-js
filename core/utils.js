@@ -211,7 +211,7 @@ PF.utils.new2dCanvas = function (id, width, height) {
     return new Proxy(grid, {
       get(target, prop) {
         if (typeof target[prop] !== "function")
-          return Reflect.get(target, prop);
+          return target[prop];
         return new Proxy(target[prop], {
           apply: (target, thisArg, argumentsList) => {
             const result = Reflect.apply(target, thisArg, argumentsList);
