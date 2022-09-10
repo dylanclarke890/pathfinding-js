@@ -54,17 +54,30 @@ window.addEventListener("resize", () => {
   canvasPosition = canvas.getBoundingClientRect();
 });
 
+function rectsAreColliding(first, second) {
+  if (!first || !second) return false;
+  if (
+    !(
+      first.x > second.x + second.w ||
+      first.x + first.w < second.x ||
+      first.y > second.y + second.h ||
+      first.y + first.h < second.y
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
 canvas.addEventListener("click", (e) => {
   setMousePosition(e);
   if (mouse.x <= uiPanelOffset) {
     const x = Math.floor(mouse.x / PF.settings.squareSize),
       y = Math.floor(mouse.y / PF.settings.squareSize);
     matrix[x][y] = matrix[x][y] === 1 ? 0 : 1;
-  } else {
-    for (let i = 0; i < buttons.length; i++) {
-      const { x, y, w, h } = buttons[i];
-    }
-  }
+  } else
+    for (let i = 0; i < buttons.length; i++)
+      if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
 });
 
 let searched = new PF.Data.Queue();
