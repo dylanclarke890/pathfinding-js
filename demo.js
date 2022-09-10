@@ -23,9 +23,13 @@ const grid = PF.utils.interceptGridOperations(
 const size = PF.settings.squareSize;
 const sx = 0,
   sy = 0;
+const ex = 14,
+  ey = 14;
 
-const finder = new PF.Algorithms.BiBestFirst();
-const result = finder.findPath(sx, sy, 14, 14, grid);
+const finder = new PF.Algorithms.BiBestFirst({
+  diagonalMovement: PF.DiagonalMovement.Always,
+});
+const result = finder.findPath(sx, sy, ex, ey, grid);
 
 const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
 
@@ -62,11 +66,21 @@ function drawPath() {
   }
 }
 
+function drawPoints() {
+  ctx.fillStyle = "orange";
+  ctx.fillRect(sx * size, sy * size, size, size);
+  ctx.strokeRect(sx * size, sy * size, size, size);
+  ctx.fillStyle = "lightblue";
+  ctx.fillRect(ex * size, ey * size, size, size);
+  ctx.strokeRect(ex * size, ey * size, size, size);
+}
+
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
   drawSearchPath();
   if (!searched.size) drawPath();
+  drawPoints();
   frame++;
 }
 
