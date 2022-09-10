@@ -5,13 +5,13 @@ PF.UI.Button = class {
   constructor({ x, y, w, h, font, text, textColor, bgColor, onClick }) {
     this.x = x;
     this.y = y;
-    this.w = w;
-    this.h = h;
-    this.text = text;
-    this.font = font;
-    this.textColor = textColor;
-    this.bgColor = bgColor;
-    this.onClick = onClick;
+    this.w = w || 100;
+    this.h = h || 20;
+    this.text = text || "";
+    this.font = font || "20px Arial";
+    this.textColor = textColor || "white";
+    this.bgColor = bgColor || black;
+    this.onClick = onClick || (() => null);
   }
 
   draw() {

@@ -1,8 +1,10 @@
-const matrix = Array.from({ length: 15 }, () =>
-  Array.from({ length: 15 }, () => 0)
+const matrixW = 15,
+  matrixH = 15;
+const matrix = Array.from({ length: matrixH }, () =>
+  Array.from({ length: matrixW }, () => 0)
 );
 
-const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
+const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 800, 600);
 let canvasPosition = canvas.getBoundingClientRect();
 
 const mouse = {
@@ -12,14 +14,27 @@ const mouse = {
   h: 0.1,
 };
 
+const uiPanelOffset =
+  canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
 const buttons = [
   new PF.UI.Button({
-    x: 40,
+    x: uiPanelOffset + 50,
     y: 80,
     w: 100,
     h: 40,
     font: "20px Arial",
     text: "Start",
+    textColor: "white",
+    bgColor: "black",
+    onClick: (e) => console.log(e),
+  }),
+  new PF.UI.Button({
+    x: uiPanelOffset + 40,
+    y: 160,
+    w: 100,
+    h: 40,
+    font: "18px Arial",
+    text: "Clear Walls",
     textColor: "white",
     bgColor: "black",
     onClick: (e) => console.log(e),
@@ -41,12 +56,14 @@ window.addEventListener("resize", () => {
 
 canvas.addEventListener("click", (e) => {
   setMousePosition(e);
-  const x = Math.floor(mouse.x / PF.settings.squareSize),
-    y = Math.floor(mouse.y / PF.settings.squareSize);
-  matrix[x][y] = matrix[x][y] === 1 ? 0 : 1;
-
-  for (let i = 0; i < buttons.length; i++) {
-    const { x, y, w, h } = buttons[i];
+  if (mouse.x <= uiPanelOffset) {
+    const x = Math.floor(mouse.x / PF.settings.squareSize),
+      y = Math.floor(mouse.y / PF.settings.squareSize);
+    matrix[x][y] = matrix[x][y] === 1 ? 0 : 1;
+  } else {
+    for (let i = 0; i < buttons.length; i++) {
+      const { x, y, w, h } = buttons[i];
+    }
   }
 });
 
