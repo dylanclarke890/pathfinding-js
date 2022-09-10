@@ -1,8 +1,6 @@
 const matrix = Array.from({ length: 15 }, () =>
   Array.from({ length: 15 }, () => 0)
 );
-matrix[1][1] = 1;
-matrix[3][1] = 1;
 
 let searched = new PF.Data.Queue();
 const grid = PF.utils.interceptGridOperations(
@@ -18,9 +16,7 @@ const size = PF.settings.squareSize;
 const sx = 0,
   sy = 0;
 
-const finder = new PF.Algorithms.JumpPoint(
-  PF.DiagonalMovement.IfAtMostOneObstacle
-);
+const finder = new PF.Algorithms.BiAStar();
 const result = finder.findPath(sx, sy, 14, 14, grid);
 
 const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
