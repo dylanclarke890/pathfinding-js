@@ -33,20 +33,17 @@ PF.Data.Node = class {
 /**
  * The Grid class, which serves as the encapsulation of the layout of the nodes.
  * @constructor
- * @param {number|Array<Array<(number|boolean)>>} width_or_matrix Number of columns of the grid, or matrix
+ * @param {number|Array<Array<(number|boolean)>>} width Number of columns of the grid
  * @param {number} height Number of rows of the grid.
  * @param {Array<Array<(number|boolean)>>} [matrix] - A 0-1 matrix
+ * @param {HTMLElement} element An element to dispatch events to.
  * representing the walkable status of the nodes(0 or false for walkable).
  * If the matrix is not supplied, all the nodes will be walkable.  */
 PF.Data.Grid = class {
-  constructor(width_or_matrix, height, matrix) {
-    let width;
-
-    if (typeof width_or_matrix !== "object") width = width_or_matrix;
-    else {
-      height = width_or_matrix.length;
-      width = width_or_matrix[0].length;
-      matrix = width_or_matrix;
+  constructor({ width, height, matrix, element }) {
+    if (matrix != null) {
+      height = matrix.length;
+      width = matrix[0].length;
     }
 
     /**
@@ -54,6 +51,7 @@ PF.Data.Grid = class {
      * @type number
      */
     this.width = width;
+
     /**
      * The number of rows of the grid.
      * @type number
@@ -64,6 +62,24 @@ PF.Data.Grid = class {
      * A 2D array of nodes.
      */
     this.nodes = this.#constructNodes(width, height, matrix);
+
+
+    /**
+     * @type {HTMLElement}
+     * HTMLElement. Used to propagate Grid specific events.
+     */
+    this.element = element;
+  }
+
+  dispatchEvent(eventName, details) {
+    if (this.element !== null) {
+      this.element.dispatchEvent(new CustomEvent(eventName, {
+        detail: details,
+        bubbles: true,
+        cancelable: true,
+        composed: false,
+      }))
+    }
   }
 
   /**

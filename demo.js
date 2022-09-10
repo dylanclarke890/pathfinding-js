@@ -1,10 +1,44 @@
+const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 800, 600);
+
 const matrixW = 15,
   matrixH = 15;
 const matrix = Array.from({ length: matrixH }, () =>
   Array.from({ length: matrixW }, () => 0)
 );
+const size = PF.settings.squareSize;
+let sx = 0,
+  sy = 0,
+  ex = 14,
+  ey = 14;
 
-const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 800, 600);
+let searched = new PF.Data.Queue();
+let result = [];
+let playing = false;
+let paused = false;
+function startSearch() {
+  let grid = PF.utils.interceptGridOperations(
+    new PF.Data.Grid({ matrix, element: canvas }),
+    function (fnName, _, res) {
+      switch (fnName) {
+        case "getNeighbors":
+          for (let i = 0; i < res.length; i++)
+            if (!searched.contains(res[i])) searched.enqueue(res[i]);
+          break;
+        case "getNodeAt":
+          if (!searched.contains(res)) searched.enqueue(res);
+          break;
+        default:
+          return;
+      }
+    }
+  );
+  let finder = new PF.Algorithms.BreadthFirst({
+    diagonalMovement: PF.DiagonalMovement.Never,
+  });
+  result = finder.findPath(sx, sy, ex, ey, grid);
+  playing = true;
+}
+
 let canvasPosition = canvas.getBoundingClientRect();
 
 const mouse = {
@@ -18,26 +52,34 @@ const uiPanelOffset =
   canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
 const buttons = [
   new PF.UI.Button({
-    x: uiPanelOffset + 50,
-    y: 80,
+    x: uiPanelOffset + 40,
+    y: canvas.height - 80,
     w: 100,
     h: 40,
     font: "20px Arial",
     text: "Start",
-    textColor: "white",
-    bgColor: "black",
-    onClick: (e) => console.log(e),
+    textColor: "purple",
+    bgColor: "lightblue",
+    onClick: (me) => {
+      if (playing) {
+        paused = !paused;
+        me.text = paused ? "Resume" : "Pause";
+      } else {
+        startSearch();
+        me.text = "Pause";
+      }
+    },
   }),
   new PF.UI.Button({
     x: uiPanelOffset + 40,
-    y: 160,
+    y: canvas.height - 160,
     w: 100,
     h: 40,
     font: "18px Arial",
     text: "Clear Walls",
-    textColor: "white",
-    bgColor: "black",
-    onClick: (e) => console.log(e),
+    textColor: "purple",
+    bgColor: "lightblue",
+    onClick: (instance) => console.log(instance),
   }),
 ];
 
@@ -80,35 +122,6 @@ canvas.addEventListener("click", (e) => {
       if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
 });
 
-let searched = new PF.Data.Queue();
-const grid = PF.utils.interceptGridOperations(
-  new PF.Data.Grid(matrix),
-  function (fnName, _, res) {
-    switch (fnName) {
-      case "getNeighbors":
-        for (let i = 0; i < res.length; i++)
-          if (!searched.contains(res[i])) searched.enqueue(res[i]);
-        break;
-      case "getNodeAt":
-        if (!searched.contains(res)) searched.enqueue(res);
-        break;
-      default:
-        return;
-    }
-  }
-);
-
-const size = PF.settings.squareSize;
-const sx = 0,
-  sy = 0;
-const ex = 14,
-  ey = 14;
-
-const finder = new PF.Algorithms.BiBestFirst({
-  diagonalMovement: PF.DiagonalMovement.Always,
-});
-const result = finder.findPath(sx, sy, ex, ey, grid);
-
 let obstacles = [];
 function drawGrid() {
   ctx.strokeStyle = "grey";
@@ -143,7 +156,7 @@ let drawn = [];
 let frame = 0;
 const drawInterval = 0.05 * PF.settings.fps;
 function drawSearchPath() {
-  if (frame % drawInterval === 0 && searched.size)
+  if (!paused && searched.size && frame % drawInterval === 0)
     drawn.push(searched.dequeue());
   for (let i = 0; i < drawn.length; i++) {
     const pos = drawn[i];

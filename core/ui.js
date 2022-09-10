@@ -25,6 +25,6 @@ PF.UI.Button = class {
   }
 
   clicked(e) {
-    this.onClick(e);
+    this.onClick(this, e);
   }
 };

@@ -14,3 +14,11 @@ PF.DiagonalMovement = {
   IfAtMostOneObstacle: 3,
   OnlyWhenNoObstacles: 4,
 };
+
+PF.CanvasStatus = {
+  INIT: 1,
+  DRAWING: 2,
+  PAUSED: 3,
+  STOPPED: 4,
+  DONE: 5,
+};
