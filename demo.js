@@ -16,7 +16,7 @@ const size = PF.settings.squareSize;
 const sx = 0,
   sy = 0;
 
-const finder = new PF.Algorithms.BestFirst();
+const finder = new PF.Algorithms.AStar();
 const result = finder.findPath(sx, sy, 14, 14, grid);
 
 const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 600, 600);
@@ -49,8 +49,8 @@ function drawPath() {
   for (let i = 0; i < result.length; i++) {
     const pos = result[i];
     ctx.fillStyle = "yellow";
-    ctx.fillRect(pos[1] * size, pos[0] * size, size, size);
-    ctx.strokeRect(pos[1] * size, pos[0] * size, size, size);
+    ctx.fillRect(pos[0] * size, pos[1] * size, size, size);
+    ctx.strokeRect(pos[0] * size, pos[1] * size, size, size);
   }
 }
 

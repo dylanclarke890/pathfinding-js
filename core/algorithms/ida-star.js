@@ -95,7 +95,7 @@ PF.Algorithms.IDAStar = class {
 
     if (current > cutoff) return current; // We've searched too deep for this iteration.
     if (node == end) {
-      route[depth] = [node.y, node.x];
+      route[depth] = [node.x, node.y];
       return node;
     }
 
@@ -121,7 +121,7 @@ PF.Algorithms.IDAStar = class {
       );
 
       if (searchResult instanceof PF.Data.Node) {
-        route[depth] = [node.y, node.x];
+        route[depth] = [node.x, node.y];
         return searchResult;
       }
 
