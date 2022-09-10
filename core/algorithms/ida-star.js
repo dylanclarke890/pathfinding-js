@@ -1,8 +1,6 @@
 var PF = PF || {};
 PF.Algorithms = PF.Algorithms || {};
 
-// TODO : Fix pathing bug.
-
 /**
  * Iterative Deeping A Star (IDA*) path-finder.
  * @constructor
@@ -97,7 +95,7 @@ PF.Algorithms.IDAStar = class {
 
     if (current > cutoff) return current; // We've searched too deep for this iteration.
     if (node == end) {
-      route[depth] = [node.x, node.y];
+      route[depth] = [node.y, node.x];
       return node;
     }
 
@@ -123,7 +121,7 @@ PF.Algorithms.IDAStar = class {
       );
 
       if (searchResult instanceof PF.Data.Node) {
-        route[depth] = [node.x, node.y];
+        route[depth] = [node.y, node.x];
         return searchResult;
       }
 
