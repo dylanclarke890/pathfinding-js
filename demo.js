@@ -67,42 +67,9 @@ const mouse = {
 const uiPanelOffset =
   canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
 const buttons = {
-  chooseAlgorithm: new PF.UI.Button({
-    x: uiPanelOffset + (canvas.width - uiPanelOffset) / 2 - 75,
-    y: canvas.height - 140,
-    w: 150,
-    h: 40,
-    font: "18px Arial",
-    text: "Choose Algorithm",
-    textColor: "blue",
-    bgColor: "purple",
-    onClick: (me) => {
-      buttons.clearWalls.hidden = true;
-      buttons.start.hidden = true;
-      buttons.backToStart.hidden = false;
-      me.hidden = true;
-    },
-  }),
-  backToStart: new PF.UI.Button({
-    x: uiPanelOffset + (canvas.width - uiPanelOffset) / 2 - 75,
-    y: canvas.height - 100,
-    w: 150,
-    h: 40,
-    font: "18px Arial",
-    text: "Back to Start",
-    textColor: "blue",
-    bgColor: "purple",
-    onClick: (me) => {
-      buttons.clearWalls.hidden = false;
-      buttons.start.hidden = false;
-      buttons.chooseAlgorithm.hidden = false;
-      me.hidden = true;
-    },
-    hidden: true,
-  }),
   clearWalls: new PF.UI.Button({
     x: uiPanelOffset + 135,
-    y: canvas.height - 200,
+    y: canvas.height - 160,
     w: 100,
     h: 40,
     font: "18px Arial",
@@ -120,7 +87,7 @@ const buttons = {
   }),
   start: new PF.UI.Button({
     x: uiPanelOffset + 15,
-    y: canvas.height - 200,
+    y: canvas.height - 160,
     w: 100,
     h: 40,
     font: "20px Arial",
@@ -142,7 +109,7 @@ const buttons = {
   }),
   cancel: new PF.UI.Button({
     x: uiPanelOffset + 15,
-    y: canvas.height - 140,
+    y: canvas.height - 80,
     w: 100,
     h: 40,
     font: "20px Arial",
@@ -164,7 +131,7 @@ const buttons = {
   }),
   restart: new PF.UI.Button({
     x: uiPanelOffset + 135,
-    y: canvas.height - 140,
+    y: canvas.height - 80,
     w: 100,
     h: 40,
     font: "20px Arial",
@@ -326,25 +293,25 @@ const heuristics = [
     name: "Manhattan",
     val: PF.enums.Heuristic.Manhattan,
     x: uiPanelOffset + panelCenter / 2,
-    y: 330,
+    y: canvas.height - 210,
   },
   {
     name: "Euclidean",
     val: PF.enums.Heuristic.Euclidean,
     x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: 330,
+    y: canvas.height - 210,
   },
   {
     name: "Octile",
     val: PF.enums.Heuristic.Octile,
     x: uiPanelOffset + panelCenter / 2,
-    y: 360,
+    y: canvas.height - 180,
   },
   {
     name: "Chebyshev",
     val: PF.enums.Heuristic.Chebyshev,
     x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: 360,
+    y: canvas.height - 180,
   },
 ];
 function drawHeuristicOptions() {
@@ -352,7 +319,7 @@ function drawHeuristicOptions() {
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, 300);
+  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, canvas.height - 240);
 
   ctx.font = "16px Arial";
   for (let i = 0; i < heuristics.length; i++) {
