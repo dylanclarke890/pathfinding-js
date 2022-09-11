@@ -23,6 +23,7 @@ let paused = false;
 function startSearch() {
   searched = new PF.Data.Queue();
   drawn = [];
+  result = [];
   let grid = PF.utils.interceptGridOperations(
     new PF.Data.Grid({ matrix }),
     (fnName, _, res) => {

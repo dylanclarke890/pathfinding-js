@@ -57,7 +57,7 @@ PF.Algorithms.IDAStar = class {
     // Has overflow protection.
     for (let j = 0; true; ++j) {
       const route = [];
-      const searchResult = this.search(start, 0, cutOff, route, 0, end); // Search till cut-off depth.
+      const searchResult = this.search(start, 0, cutOff, route, 0, end, grid); // Search till cut-off depth.
       if (searchResult === Infinity) return []; // Route not possible, or not found in time limit.
       // If t is a node, it's also the end node. Route is now
       // populated with a valid path to the end node.
@@ -83,7 +83,7 @@ PF.Algorithms.IDAStar = class {
    * @return {number || PF.Data.Node} either a number with the new optimal cut-off depth,
    * or a valid node instance, in which case a path was found.
    */
-  search(node, nodeCost, cutoff, route, depth, end) {
+  search(node, nodeCost, cutoff, route, depth, end, grid) {
     this.nodesVisited++;
     // Enforce timelimit:
     if (
@@ -118,7 +118,8 @@ PF.Algorithms.IDAStar = class {
         cutoff,
         route,
         depth + 1,
-        end
+        end,
+        grid
       );
 
       if (searchResult instanceof PF.Data.Node) {
