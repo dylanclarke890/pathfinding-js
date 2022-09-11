@@ -9,7 +9,7 @@ const size = PF.settings.squareSize;
 let sx = 0,
   sy = 0,
   ex = 14,
-  ey = 0;
+  ey = 14;
 
 let searched = new PF.Data.Queue();
 let result = [];
@@ -34,10 +34,10 @@ function startSearch() {
       }
     }
   );
-  let finder = new PF.Algorithms.BestFirst({
+  let pathFinder = new PF.Algorithms.BestFirst({
     diagonalMovement: PF.enums.DiagonalMovement.Never,
   });
-  result = finder.findPath(sx, sy, ex, ey, grid);
+  result = pathFinder.findPath(sx, sy, ex, ey, grid);
   playing = true;
 }
 
@@ -90,7 +90,14 @@ const buttons = {
     text: "Clear Walls",
     textColor: "purple",
     bgColor: "lightblue",
-    onClick: (instance) => console.log(instance),
+    onClick: (me) => {
+      if (playing) return;
+      for (let i = 0; i < obstacles.length; i++) {
+        const [x, y] = obstacles[i];
+        matrix[y][x] = 0;
+      }
+      obstacles = [];
+    },
   }),
 };
 
