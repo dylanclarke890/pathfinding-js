@@ -15,10 +15,15 @@ PF.DiagonalMovement = {
   OnlyWhenNoObstacles: 4,
 };
 
-PF.CanvasStatus = {
-  INIT: 1,
-  DRAWING: 2,
-  PAUSED: 3,
-  STOPPED: 4,
-  DONE: 5,
+PF.Algo = {
+  ASTAR: 1,
+  BIASTAR: 2,
+  BESTFIRST: 3,
+  BIBESTFIRST: 4,
+  BREADTHFIRST: 5,
+  BIBREADTHFIRST: 6,
+  DIJKSTRA: 7,
+  BIDIJKSTRA: 8,
+  IDASTAR: 9,
+  JUMPPOINT: 10,
 };
