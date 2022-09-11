@@ -169,6 +169,9 @@ canvas.addEventListener("mousedown", (e) => {
   setMousePosition(e, true);
   if (playing || mouse.x > uiPanelOffset) return;
   const { x, y } = PF.utils.toGridCoords(mouse);
+  searched = new PF.Data.Queue();
+  result = [];
+  drawn = [];
   if (x === sx && y === sy) mouse.action = mouseActions.moveStart;
   else if (x === ex && y === ey) mouse.action = mouseActions.moveGoal;
   else if (matrix[y][x]) {
