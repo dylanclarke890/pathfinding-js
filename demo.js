@@ -39,8 +39,10 @@ function startSearch() {
       }
     }
   );
-  let pathFinder = new PF.Algorithms.BestFirst({
-    diagonalMovement: PF.enums.DiagonalMovement.Never,
+  const { algorithm, heuristic } = selected;
+  const pathFinder = new PF.PathFinder({
+    algorithmType: algorithm,
+    heuristicType: heuristic,
   });
   result = pathFinder.findPath(sx, sy, ex, ey, grid);
   playing = true;
