@@ -248,8 +248,10 @@ canvas.addEventListener("click", (e) => {
         },
         mouse
       )
-    )
+    ) {
       selected.heuristic = option.val;
+      return;
+    }
   }
   for (let i = 0; i < algorithms.length; i++) {
     const option = algorithms[i];
@@ -263,8 +265,11 @@ canvas.addEventListener("click", (e) => {
         },
         mouse
       )
-    )
+    ) {
       selected.algorithm = option.val;
+      checkboxes[2].show = option.bi;
+      return;
+    }
   }
   for (let i = 0; i < checkboxes.length; i++) {
     const option = checkboxes[i];
@@ -278,8 +283,10 @@ canvas.addEventListener("click", (e) => {
         },
         mouse
       )
-    )
+    ) {
       selected[option.key] = !selected[option.key];
+      return;
+    }
   }
   for (const button in buttons) {
     const btn = buttons[button];
@@ -419,6 +426,7 @@ const checkboxes = [
     x: uiPanelOffset + panelCenter / 2,
     y: canvas.height - 210,
     fontSize: 14,
+    show: true,
   },
   {
     name: "Cross Corners",
@@ -426,6 +434,7 @@ const checkboxes = [
     x: uiPanelOffset + panelCenter + panelCenter / 2,
     y: canvas.height - 210,
     fontSize: 14,
+    show: true,
   },
   {
     name: "Bidirectional",
@@ -433,6 +442,7 @@ const checkboxes = [
     x: uiPanelOffset + panelCenter,
     y: canvas.height - 180,
     fontSize: 14,
+    show: true,
   },
 ];
 
@@ -443,6 +453,7 @@ function drawCheckboxes() {
 
   for (let i = 0; i < checkboxes.length; i++) {
     const check = checkboxes[i];
+    if (!check.show) return;
     ctx.font = `${check.fontSize}px Arial`;
     ctx.fillStyle = selected[check.key] ? "gold" : "white";
     ctx.fillText(check.name, check.x, check.y);
