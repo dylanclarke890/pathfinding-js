@@ -2,7 +2,18 @@ var PF = PF || {};
 PF.UI = PF.UI || {};
 
 PF.UI.Button = class {
-  constructor({ x, y, w, h, font, text, textColor, bgColor, onClick, hidden }) {
+  constructor({
+    x,
+    y,
+    w,
+    h,
+    font,
+    text,
+    textColor,
+    strokeStyle,
+    onClick,
+    hidden,
+  }) {
     this.x = x;
     this.y = y;
     this.w = w || 100;
@@ -10,15 +21,15 @@ PF.UI.Button = class {
     this.text = text || "";
     this.font = font || "20px Arial";
     this.textColor = textColor || "white";
-    this.bgColor = bgColor || black;
+    this.strokeStyle = strokeStyle || "white";
     this.onClick = onClick || (() => null);
     this.hidden = hidden || false;
   }
 
   draw() {
     if (this.hidden) return;
-    ctx.fillStyle = this.bgColor;
-    ctx.fillRect(this.x, this.y, this.w, this.h);
+    ctx.strokeStyle = this.strokeStyle;
+    ctx.strokeRect(this.x, this.y, this.w, this.h);
     ctx.fillStyle = this.textColor;
     ctx.font = this.font;
     ctx.textAlign = "center";

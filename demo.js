@@ -21,8 +21,6 @@ const buttons = {
     h: 40,
     font: "18px Arial",
     text: "Clear Walls",
-    textColor: "purple",
-    bgColor: "lightblue",
     onClick: () => {
       if (playing) return;
       for (let i = 0; i < obstacles.length; i++) {
@@ -39,8 +37,6 @@ const buttons = {
     h: 40,
     font: "20px Arial",
     text: "Start",
-    textColor: "purple",
-    bgColor: "lightblue",
     onClick: (me) => {
       if (playing) {
         paused = !paused;
@@ -61,8 +57,6 @@ const buttons = {
     h: 40,
     font: "20px Arial",
     text: "Cancel",
-    textColor: "purple",
-    bgColor: "lightblue",
     onClick: (me) => {
       playing = false;
       paused = false;
@@ -83,8 +77,6 @@ const buttons = {
     h: 40,
     font: "20px Arial",
     text: "Restart",
-    textColor: "purple",
-    bgColor: "lightblue",
     onClick: (me) => {
       startSearch();
       playing = true;
