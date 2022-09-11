@@ -1,9 +1,7 @@
 const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 850, 600);
 
-const matrixW = 15,
-  matrixH = 15;
-const matrix = Array.from({ length: matrixH }, () =>
-  Array.from({ length: matrixW }, () => 0)
+const matrix = Array.from({ length: PF.settings.matrixSize }, () =>
+  Array.from({ length: PF.settings.matrixSize }, () => 0)
 );
 const size = PF.settings.squareSize;
 let sx = 0,
@@ -74,7 +72,8 @@ const mouse = {
 };
 
 const uiPanelOffset =
-  canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
+  canvas.width -
+  (canvas.width - PF.settings.matrixSize * PF.settings.squareSize);
 const buttons = {
   clearWalls: new PF.UI.Button({
     x: uiPanelOffset + 135,
@@ -306,8 +305,9 @@ function drawGrid() {
     for (let x = 0; x < matrix[y].length; x++) {
       if (matrix[y][x]) obstacles.push([x, y]);
       else {
-        ctx.fillRect(x * size, y * size, size, size);
-        ctx.strokeRect(x * size, y * size, size, size);
+        const coords = PF.utils.toPageCoords({ x, y });
+        ctx.fillRect(coords.x, coords.y, size, size);
+        ctx.strokeRect(coords.x, coords.y, size, size);
       }
     }
 }
@@ -316,8 +316,9 @@ function drawObstacles() {
   ctx.fillStyle = "blue";
   for (let i = 0; i < obstacles.length; i++) {
     const [x, y] = obstacles[i];
-    ctx.fillRect(x * size, y * size, size, size);
-    ctx.strokeRect(x * size, y * size, size, size);
+    const coords = PF.utils.toPageCoords({ x, y });
+    ctx.fillRect(coords.x, coords.y, size, size);
+    ctx.strokeRect(coords.x, coords.y, size, size);
   }
 }
 
@@ -487,28 +488,32 @@ function drawSearchPath() {
   }
   for (let i = 0; i < drawn.length; i++) {
     const pos = drawn[i];
+    const coords = PF.utils.toPageCoords(pos);
     ctx.fillStyle = "green";
-    ctx.fillRect(pos.x * size, pos.y * size, size, size);
-    ctx.strokeRect(pos.x * size, pos.y * size, size, size);
+    ctx.fillRect(coords.x, coords.y, size, size);
+    ctx.strokeRect(coords.x, coords.y, size, size);
   }
 }
 
 function drawPath() {
   for (let i = 0; i < result.length; i++) {
     const pos = result[i];
+    const coords = PF.utils.toPageCoords({ x: pos[0], y: pos[1] });
     ctx.fillStyle = "yellow";
-    ctx.fillRect(pos[0] * size, pos[1] * size, size, size);
-    ctx.strokeRect(pos[0] * size, pos[1] * size, size, size);
+    ctx.fillRect(coords.x, coords.y, size, size);
+    ctx.strokeRect(coords.x, coords.y, size, size);
   }
 }
 
 function drawPoints() {
+  const startCoords = PF.utils.toPageCoords({ x: sx, y: sy });
+  const endCoords = PF.utils.toPageCoords({ x: ex, y: ey });
   ctx.fillStyle = "orange";
-  ctx.fillRect(sx * size, sy * size, size, size);
-  ctx.strokeRect(sx * size, sy * size, size, size);
+  ctx.fillRect(startCoords.x, startCoords.y, size, size);
+  ctx.strokeRect(startCoords.x, startCoords.y, size, size);
   ctx.fillStyle = "lightblue";
-  ctx.fillRect(ex * size, ey * size, size, size);
-  ctx.strokeRect(ex * size, ey * size, size, size);
+  ctx.fillRect(endCoords.x, endCoords.y, size, size);
+  ctx.strokeRect(endCoords.x, endCoords.y, size, size);
 }
 
 function update() {

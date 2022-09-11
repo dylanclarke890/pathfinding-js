@@ -7,6 +7,7 @@ PF.settings = {
   fpsInterval: 1000 / FPS,
   squareSize: 40,
   searchPathDrawInterval: 0.1, // in seconds
+  matrixSize: 15,
 };
 
 PF.enums.DiagonalMovement = {
