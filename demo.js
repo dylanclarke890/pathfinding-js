@@ -78,7 +78,7 @@ const uiPanelOffset =
 const buttons = {
   clearWalls: new PF.UI.Button({
     x: uiPanelOffset + 135,
-    y: canvas.height - 160,
+    y: canvas.height - 140,
     w: 100,
     h: 40,
     font: "18px Arial",
@@ -96,7 +96,7 @@ const buttons = {
   }),
   start: new PF.UI.Button({
     x: uiPanelOffset + 15,
-    y: canvas.height - 160,
+    y: canvas.height - 140,
     w: 100,
     h: 40,
     font: "20px Arial",
@@ -317,25 +317,25 @@ const heuristics = [
     name: "Manhattan",
     val: PF.enums.Heuristic.Manhattan,
     x: uiPanelOffset + panelCenter / 2,
-    y: canvas.height - 210,
+    y: 280,
   },
   {
     name: "Euclidean",
     val: PF.enums.Heuristic.Euclidean,
     x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: canvas.height - 210,
+    y: 280,
   },
   {
     name: "Octile",
     val: PF.enums.Heuristic.Octile,
     x: uiPanelOffset + panelCenter / 2,
-    y: canvas.height - 180,
+    y: 310,
   },
   {
     name: "Chebyshev",
     val: PF.enums.Heuristic.Chebyshev,
     x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: canvas.height - 180,
+    y: 310,
   },
 ];
 function drawHeuristicOptions() {
@@ -343,7 +343,7 @@ function drawHeuristicOptions() {
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, canvas.height - 240);
+  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, 250);
 
   ctx.font = "16px Arial";
   for (let i = 0; i < heuristics.length; i++) {
@@ -417,21 +417,21 @@ const checkboxes = [
     name: "Allow Diagonals",
     key: "allowDiagonal",
     x: uiPanelOffset + panelCenter / 2,
-    y: 270,
+    y: canvas.height - 210,
     fontSize: 14,
   },
   {
     name: "Cross Corners",
     key: "crossCorners",
     x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: 270,
+    y: canvas.height - 210,
     fontSize: 14,
   },
   {
     name: "Bidirectional",
     key: "bi",
     x: uiPanelOffset + panelCenter,
-    y: 300,
+    y: canvas.height - 180,
     fontSize: 14,
   },
 ];
@@ -439,7 +439,7 @@ const checkboxes = [
 function drawCheckboxes() {
   ctx.font = "20px Arial";
   ctx.fillStyle = "white";
-  ctx.fillText("Options", uiPanelOffset + panelCenter, 240);
+  ctx.fillText("Options", uiPanelOffset + panelCenter, canvas.height - 240);
 
   for (let i = 0; i < checkboxes.length; i++) {
     const check = checkboxes[i];
