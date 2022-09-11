@@ -32,7 +32,7 @@ function startSearch() {
       }
     }
   );
-  let finder = new PF.Algorithms.BreadthFirst({
+  let finder = new PF.Algorithms.BiBreadthFirst({
     diagonalMovement: PF.DiagonalMovement.Never,
   });
   result = finder.findPath(sx, sy, ex, ey, grid);

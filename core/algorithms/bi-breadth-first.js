@@ -20,26 +20,26 @@ PF.Algorithms.BiBreadthFirst = class {
   findPath(startX, startY, endX, endY, grid) {
     const startNode = grid.getNodeAt(startX, startY),
       endNode = grid.getNodeAt(endX, endY),
-      startOpenList = [],
-      endOpenList = [],
+      startOpenList = new PF.Data.Queue(),
+      endOpenList = new PF.Data.Queue(),
       diagonalMovement = this.diagonalMovement,
       BY_START = 0,
       BY_END = 1;
 
     // push the start and end nodes into the queues
-    startOpenList.push(startNode);
+    startOpenList.enqueue(startNode);
     startNode.opened = true;
     startNode.by = BY_START;
 
-    endOpenList.push(endNode);
+    endOpenList.enqueue(endNode);
     endNode.opened = true;
     endNode.by = BY_END;
 
     // while both the queues are not empty
     let node;
-    while (startOpenList.length && endOpenList.length) {
+    while (startOpenList.size && endOpenList.size) {
       // expand start open list
-      node = startOpenList.shift();
+      node = startOpenList.dequeue();
       node.closed = true;
 
       let neighbors = grid.getNeighbors(node, diagonalMovement);
@@ -54,14 +54,14 @@ PF.Algorithms.BiBreadthFirst = class {
             return PF.utils.biBacktrace(node, neighbor);
           continue;
         }
-        startOpenList.push(neighbor);
+        startOpenList.enqueue(neighbor);
         neighbor.parent = node;
         neighbor.opened = true;
         neighbor.by = BY_START;
       }
 
       // expand end open list
-      node = endOpenList.shift();
+      node = endOpenList.dequeue();
       node.closed = true;
 
       neighbors = grid.getNeighbors(node, diagonalMovement);
@@ -73,7 +73,7 @@ PF.Algorithms.BiBreadthFirst = class {
             return PF.utils.biBacktrace(neighbor, node);
           continue;
         }
-        endOpenList.push(neighbor);
+        endOpenList.enqueue(neighbor);
         neighbor.parent = node;
         neighbor.opened = true;
         neighbor.by = BY_END;
