@@ -17,8 +17,8 @@ let playing = false;
 let paused = false;
 function startSearch() {
   let grid = PF.utils.interceptGridOperations(
-    new PF.Data.Grid({ matrix, element: canvas }),
-    function (fnName, _, res) {
+    new PF.Data.Grid({ matrix }),
+    (fnName, _, res) => {
       switch (fnName) {
         case "getNeighbors":
           for (let i = 0; i < res.length; i++)

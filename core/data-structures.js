@@ -63,23 +63,6 @@ PF.Data.Grid = class {
      */
     this.nodes = this.#constructNodes(width, height, matrix);
 
-
-    /**
-     * @type {HTMLElement}
-     * HTMLElement. Used to propagate Grid specific events.
-     */
-    this.element = element;
-  }
-
-  dispatchEvent(eventName, details) {
-    if (this.element !== null) {
-      this.element.dispatchEvent(new CustomEvent(eventName, {
-        detail: details,
-        bubbles: true,
-        cancelable: true,
-        composed: false,
-      }))
-    }
   }
 
   /**
