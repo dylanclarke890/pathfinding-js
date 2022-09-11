@@ -11,6 +11,8 @@ const matrix = Array.from({ length: PF.settings.matrixSize }, () =>
 const uiPanelOffset =
   canvas.width -
   (canvas.width - PF.settings.matrixSize * PF.settings.squareSize);
+const panelCenter = (canvas.width - uiPanelOffset) / 2;
+
 const buttons = {
   clearWalls: new PF.UI.Button({
     x: uiPanelOffset + 135,
@@ -94,6 +96,102 @@ const buttons = {
     hidden: true,
   }),
 };
+const checkboxes = [
+  {
+    name: "Allow Diagonals",
+    key: "allowDiagonal",
+    x: uiPanelOffset + panelCenter / 2,
+    y: canvas.height - 210,
+    fontSize: 14,
+    show: true,
+  },
+  {
+    name: "Cross Corners",
+    key: "crossCorners",
+    x: uiPanelOffset + panelCenter + panelCenter / 2,
+    y: canvas.height - 210,
+    fontSize: 14,
+    show: true,
+  },
+  {
+    name: "Bidirectional",
+    key: "bi",
+    x: uiPanelOffset + panelCenter,
+    y: canvas.height - 180,
+    fontSize: 14,
+    show: true,
+  },
+];
+const algorithms = [
+  {
+    name: "Breadth First",
+    val: PF.enums.Algo.BreadthFirst,
+    x: uiPanelOffset + panelCenter,
+    y: 50,
+    bi: true,
+  },
+  {
+    name: "Dijkstra",
+    val: PF.enums.Algo.Dijkstra,
+    x: uiPanelOffset + panelCenter,
+    y: 80,
+    bi: true,
+  },
+  {
+    name: "A Star",
+    val: PF.enums.Algo.AStar,
+    x: uiPanelOffset + panelCenter,
+    y: 110,
+    bi: true,
+  },
+  {
+    name: "IDA Star",
+    val: PF.enums.Algo.IDAStar,
+    x: uiPanelOffset + panelCenter,
+    y: 140,
+    bi: false,
+  },
+  {
+    name: "Best First",
+    val: PF.enums.Algo.BestFirst,
+    x: uiPanelOffset + panelCenter,
+    y: 170,
+    bi: true,
+  },
+  {
+    name: "Jump Point",
+    val: PF.enums.Algo.JumpPoint,
+    x: uiPanelOffset + panelCenter,
+    y: 200,
+    bi: false,
+  },
+];
+const heuristics = [
+  {
+    name: "Manhattan",
+    val: PF.enums.Heuristic.Manhattan,
+    x: uiPanelOffset + panelCenter / 2,
+    y: 280,
+  },
+  {
+    name: "Euclidean",
+    val: PF.enums.Heuristic.Euclidean,
+    x: uiPanelOffset + panelCenter + panelCenter / 2,
+    y: 280,
+  },
+  {
+    name: "Octile",
+    val: PF.enums.Heuristic.Octile,
+    x: uiPanelOffset + panelCenter / 2,
+    y: 310,
+  },
+  {
+    name: "Chebyshev",
+    val: PF.enums.Heuristic.Chebyshev,
+    x: uiPanelOffset + panelCenter + panelCenter / 2,
+    y: 310,
+  },
+];
 
 let sx = 0,
   sy = 0,
@@ -110,6 +208,10 @@ const selected = {
 
 let searched = new PF.Data.Queue();
 let result = [];
+let obstacles = [];
+let drawn = [];
+let frame = 0;
+const drawInterval = 0.05 * PF.settings.fps;
 let playing = false;
 let paused = false;
 function startSearch() {
@@ -281,20 +383,14 @@ const mouse = {
   });
 })();
 
-
-
-let obstacles = [];
 function drawGrid() {
   ctx.strokeStyle = "grey";
   ctx.fillStyle = "white";
   obstacles = [];
   for (let y = 0; y < matrix.length; y++)
-    for (let x = 0; x < matrix[y].length; x++) {
+    for (let x = 0; x < matrix[y].length; x++)
       if (matrix[y][x]) obstacles.push([x, y]);
-      else {
-        PF.UI.drawCell(x, y);
-      }
-    }
+      else PF.UI.drawCell(x, y);
 }
 
 function drawObstacles() {
@@ -304,33 +400,6 @@ function drawObstacles() {
   }
 }
 
-const panelCenter = (canvas.width - uiPanelOffset) / 2;
-const heuristics = [
-  {
-    name: "Manhattan",
-    val: PF.enums.Heuristic.Manhattan,
-    x: uiPanelOffset + panelCenter / 2,
-    y: 280,
-  },
-  {
-    name: "Euclidean",
-    val: PF.enums.Heuristic.Euclidean,
-    x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: 280,
-  },
-  {
-    name: "Octile",
-    val: PF.enums.Heuristic.Octile,
-    x: uiPanelOffset + panelCenter / 2,
-    y: 310,
-  },
-  {
-    name: "Chebyshev",
-    val: PF.enums.Heuristic.Chebyshev,
-    x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: 310,
-  },
-];
 function drawHeuristicOptions() {
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
@@ -346,50 +415,6 @@ function drawHeuristicOptions() {
   }
 }
 
-const algorithms = [
-  {
-    name: "Breadth First",
-    val: PF.enums.Algo.BreadthFirst,
-    x: uiPanelOffset + panelCenter,
-    y: 50,
-    bi: true,
-  },
-  {
-    name: "Dijkstra",
-    val: PF.enums.Algo.Dijkstra,
-    x: uiPanelOffset + panelCenter,
-    y: 80,
-    bi: true,
-  },
-  {
-    name: "A Star",
-    val: PF.enums.Algo.AStar,
-    x: uiPanelOffset + panelCenter,
-    y: 110,
-    bi: true,
-  },
-  {
-    name: "IDA Star",
-    val: PF.enums.Algo.IDAStar,
-    x: uiPanelOffset + panelCenter,
-    y: 140,
-    bi: false,
-  },
-  {
-    name: "Best First",
-    val: PF.enums.Algo.BestFirst,
-    x: uiPanelOffset + panelCenter,
-    y: 170,
-    bi: true,
-  },
-  {
-    name: "Jump Point",
-    val: PF.enums.Algo.JumpPoint,
-    x: uiPanelOffset + panelCenter,
-    y: 200,
-    bi: false,
-  },
-];
 function drawAlgorithmOptions() {
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
@@ -404,33 +429,6 @@ function drawAlgorithmOptions() {
     ctx.fillText(option.name, option.x, option.y);
   }
 }
-
-const checkboxes = [
-  {
-    name: "Allow Diagonals",
-    key: "allowDiagonal",
-    x: uiPanelOffset + panelCenter / 2,
-    y: canvas.height - 210,
-    fontSize: 14,
-    show: true,
-  },
-  {
-    name: "Cross Corners",
-    key: "crossCorners",
-    x: uiPanelOffset + panelCenter + panelCenter / 2,
-    y: canvas.height - 210,
-    fontSize: 14,
-    show: true,
-  },
-  {
-    name: "Bidirectional",
-    key: "bi",
-    x: uiPanelOffset + panelCenter,
-    y: canvas.height - 180,
-    fontSize: 14,
-    show: true,
-  },
-];
 
 function drawCheckboxes() {
   ctx.font = "20px Arial";
@@ -454,9 +452,6 @@ function drawUI() {
   drawCheckboxes();
 }
 
-let drawn = [];
-let frame = 0;
-const drawInterval = 0.05 * PF.settings.fps;
 function drawSearchPath() {
   if (!paused && searched.size && frame % drawInterval === 0) {
     drawn.push(searched.dequeue());
