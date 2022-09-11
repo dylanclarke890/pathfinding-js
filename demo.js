@@ -14,6 +14,9 @@ let sx = 0,
 const selected = {
   algorithm: PF.enums.Algo.BreadthFirst,
   heuristic: PF.enums.Heuristic.Manhattan,
+  allowDiagonal: false,
+  crossCorners: false,
+  bi: false,
 };
 
 let searched = new PF.Data.Queue();
@@ -40,10 +43,13 @@ function startSearch() {
       }
     }
   );
-  const { algorithm, heuristic } = selected;
+  const { algorithm, heuristic, allowDiagonal, crossCorners, bi } = selected;
   const pathFinder = new PF.PathFinder({
     algorithmType: algorithm,
     heuristicType: heuristic,
+    allowDiagonal,
+    crossCorners,
+    bi,
   });
   result = pathFinder.findPath(sx, sy, ex, ey, grid);
   playing = true;
@@ -260,6 +266,21 @@ canvas.addEventListener("click", (e) => {
     )
       selected.algorithm = option.val;
   }
+  for (let i = 0; i < checkboxes.length; i++) {
+    const option = checkboxes[i];
+    if (
+      rectsAreColliding(
+        {
+          x: option.x - 50,
+          y: option.y - 15,
+          w: 100,
+          h: 30,
+        },
+        mouse
+      )
+    )
+      selected[option.key] = !selected[option.key];
+  }
   for (const button in buttons) {
     const btn = buttons[button];
     if (!btn.hidden && rectsAreColliding(btn, mouse)) btn.clicked(e);
@@ -391,11 +412,49 @@ function drawAlgorithmOptions() {
   }
 }
 
+const checkboxes = [
+  {
+    name: "Allow Diagonals",
+    key: "allowDiagonal",
+    x: uiPanelOffset + panelCenter / 2,
+    y: 270,
+    fontSize: 14,
+  },
+  {
+    name: "Cross Corners",
+    key: "crossCorners",
+    x: uiPanelOffset + panelCenter + panelCenter / 2,
+    y: 270,
+    fontSize: 14,
+  },
+  {
+    name: "Bidirectional",
+    key: "bi",
+    x: uiPanelOffset + panelCenter,
+    y: 300,
+    fontSize: 14,
+  },
+];
+
+function drawCheckboxes() {
+  ctx.font = "20px Arial";
+  ctx.fillStyle = "white";
+  ctx.fillText("Options", uiPanelOffset + panelCenter, 240);
+
+  for (let i = 0; i < checkboxes.length; i++) {
+    const check = checkboxes[i];
+    ctx.font = `${check.fontSize}px Arial`;
+    ctx.fillStyle = selected[check.key] ? "gold" : "white";
+    ctx.fillText(check.name, check.x, check.y);
+  }
+}
+
 function drawUI() {
   const btns = Object.values(buttons);
   for (let i = 0; i < btns.length; i++) btns[i].draw();
   drawHeuristicOptions();
   drawAlgorithmOptions();
+  drawCheckboxes();
 }
 
 let drawn = [];
