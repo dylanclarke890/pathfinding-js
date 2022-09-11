@@ -16,6 +16,8 @@ let result = [];
 let playing = false;
 let paused = false;
 function startSearch() {
+  searched = new PF.Data.Queue();
+  drawn = [];
   let grid = PF.utils.interceptGridOperations(
     new PF.Data.Grid({ matrix }),
     (fnName, _, res) => {
@@ -35,9 +37,7 @@ function startSearch() {
   let finder = new PF.Algorithms.BestFirst({
     diagonalMovement: PF.enums.DiagonalMovement.Never,
   });
-  console.log(grid.clone());
   result = finder.findPath(sx, sy, ex, ey, grid);
-  console.log(result);
   playing = true;
 }
 
@@ -61,8 +61,8 @@ const mouse = {
 
 const uiPanelOffset =
   canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
-const buttons = [
-  new PF.UI.Button({
+const buttons = {
+  start: new PF.UI.Button({
     x: uiPanelOffset + 40,
     y: canvas.height - 80,
     w: 100,
@@ -81,7 +81,7 @@ const buttons = [
       }
     },
   }),
-  new PF.UI.Button({
+  clearWalls: new PF.UI.Button({
     x: uiPanelOffset + 40,
     y: canvas.height - 160,
     w: 100,
@@ -92,7 +92,7 @@ const buttons = [
     bgColor: "lightblue",
     onClick: (instance) => console.log(instance),
   }),
-];
+};
 
 const setMousePosition = (e, pressing = mouse.pressing) => {
   mouse.x = e.x - (canvasPosition.left + 6);
@@ -102,7 +102,7 @@ const setMousePosition = (e, pressing = mouse.pressing) => {
 
 canvas.addEventListener("mousedown", (e) => {
   setMousePosition(e, true);
-  if (mouse.x > uiPanelOffset) return;
+  if (playing || mouse.x > uiPanelOffset) return;
   const { x, y } = PF.utils.toGridCoords(mouse);
   if (x === sx && y === sy) mouse.action = mouseActions.moveStart;
   else if (x === ex && y === ey) mouse.action = mouseActions.moveGoal;
@@ -122,7 +122,7 @@ canvas.addEventListener("mouseup", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
   setMousePosition(e);
-  if (mouse.x > uiPanelOffset || !mouse.pressing) return;
+  if (playing || mouse.x > uiPanelOffset || !mouse.pressing) return;
   const { x, y } = PF.utils.toGridCoords(mouse);
   switch (mouse.action) {
     case mouseActions.drawWalls: {
@@ -168,8 +168,10 @@ function rectsAreColliding(first, second) {
 canvas.addEventListener("click", (e) => {
   setMousePosition(e);
   if (mouse.x <= uiPanelOffset) return;
-  for (let i = 0; i < buttons.length; i++)
-    if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
+  for (const button in buttons) {
+    const btn = buttons[button];
+    if (rectsAreColliding(btn, mouse)) btn.clicked(e);
+  }
 });
 
 let obstacles = [];
@@ -197,17 +199,21 @@ function drawObstacles() {
 }
 
 function drawUI() {
-  for (let i = 0; i < buttons.length; i++) {
-    buttons[i].draw();
-  }
+  const btns = Object.values(buttons);
+  for (let i = 0; i < btns.length; i++) btns[i].draw();
 }
 
 let drawn = [];
 let frame = 0;
 const drawInterval = 0.05 * PF.settings.fps;
 function drawSearchPath() {
-  if (!paused && searched.size && frame % drawInterval === 0)
+  if (!paused && searched.size && frame % drawInterval === 0) {
     drawn.push(searched.dequeue());
+    if (!searched.size) {
+      playing = false;
+      buttons.start.text = "Start";
+    }
+  }
   for (let i = 0; i < drawn.length; i++) {
     const pos = drawn[i];
     ctx.fillStyle = "green";
