@@ -43,11 +43,20 @@ function startSearch() {
 
 let canvasPosition = canvas.getBoundingClientRect();
 
+const mouseActions = {
+  drawWalls: 1,
+  eraseWalls: 2,
+  moveStart: 3,
+  moveGoal: 4,
+};
+
 const mouse = {
   x: 0,
   y: 0,
   w: 0.1,
   h: 0.1,
+  pressing: false,
+  action: mouseActions.drawWalls,
 };
 
 const uiPanelOffset =
@@ -85,13 +94,47 @@ const buttons = [
   }),
 ];
 
-const setMousePosition = (e) => {
+const setMousePosition = (e, pressing = mouse.pressing) => {
   mouse.x = e.x - (canvasPosition.left + 6);
   mouse.y = e.y - canvasPosition.top;
+  mouse.pressing = pressing;
 };
+
+canvas.addEventListener("mousedown", (e) => {
+  setMousePosition(e, true);
+  if (mouse.action === mouseActions.drawWalls) {
+  }
+});
+
+canvas.addEventListener("mouseup", (e) => {
+  setMousePosition(e, false);
+  if (mouse.x > uiPanelOffset) return;
+});
 
 canvas.addEventListener("mousemove", (e) => {
   setMousePosition(e);
+  if (mouse.x > uiPanelOffset || !mouse.pressing) return;
+  switch (mouse.action) {
+    case mouseActions.drawWalls: {
+      const x = Math.floor(mouse.x / PF.settings.squareSize),
+        y = Math.floor(mouse.y / PF.settings.squareSize);
+      matrix[y][x] = 1;
+      break;
+    }
+    case mouseActions.eraseWalls: {
+      const x = Math.floor(mouse.x / PF.settings.squareSize),
+        y = Math.floor(mouse.y / PF.settings.squareSize);
+      matrix[y][x] = 0;
+      break;
+    }
+    case mouseActions.moveStart:
+      break;
+    case mouseActions.moveGoal:
+      break;
+
+    default:
+      break;
+  }
 });
 
 window.addEventListener("resize", () => {
@@ -116,9 +159,9 @@ function rectsAreColliding(first, second) {
 canvas.addEventListener("click", (e) => {
   setMousePosition(e);
   if (mouse.x <= uiPanelOffset) {
-    const x = Math.floor(mouse.x / PF.settings.squareSize),
-      y = Math.floor(mouse.y / PF.settings.squareSize);
-    matrix[y][x] = matrix[y][x] === 1 ? 0 : 1;
+    // const x = Math.floor(mouse.x / PF.settings.squareSize),
+    //   y = Math.floor(mouse.y / PF.settings.squareSize);
+    // matrix[y][x] = matrix[y][x] === 1 ? 0 : 1;
   } else
     for (let i = 0; i < buttons.length; i++)
       if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
