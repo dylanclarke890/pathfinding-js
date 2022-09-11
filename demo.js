@@ -225,7 +225,7 @@ const mouse = {
     for (let i = 0; i < heuristics.length; i++) {
       const option = heuristics[i];
       if (
-        rectsAreColliding(
+        PF.utils.rectsAreColliding(
           {
             x: option.x - 50,
             y: option.y - 15,
@@ -242,7 +242,7 @@ const mouse = {
     for (let i = 0; i < algorithms.length; i++) {
       const option = algorithms[i];
       if (
-        rectsAreColliding(
+        PF.utils.rectsAreColliding(
           {
             x: option.x - 50,
             y: option.y - 15,
@@ -260,7 +260,7 @@ const mouse = {
     for (let i = 0; i < checkboxes.length; i++) {
       const option = checkboxes[i];
       if (
-        rectsAreColliding(
+        PF.utils.rectsAreColliding(
           {
             x: option.x - 50,
             y: option.y - 15,
@@ -276,25 +276,12 @@ const mouse = {
     }
     for (const button in buttons) {
       const btn = buttons[button];
-      if (!btn.hidden && rectsAreColliding(btn, mouse)) btn.clicked(e);
+      if (!btn.hidden && PF.utils.rectsAreColliding(btn, mouse)) btn.clicked(e);
     }
   });
 })();
 
-function rectsAreColliding(first, second) {
-  if (!first || !second) return false;
-  if (
-    !(
-      first.x > second.x + second.w ||
-      first.x + first.w < second.x ||
-      first.y > second.y + second.h ||
-      first.y + first.h < second.y
-    )
-  ) {
-    return true;
-  }
-  return false;
-}
+
 
 let obstacles = [];
 function drawGrid() {
