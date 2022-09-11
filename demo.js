@@ -275,6 +275,21 @@ canvas.addEventListener("click", (e) => {
     )
       selected.heuristic = option.val;
   }
+  for (let i = 0; i < algorithms.length; i++) {
+    const option = algorithms[i];
+    if (
+      rectsAreColliding(
+        {
+          x: option.x - 50,
+          y: option.y - 15,
+          w: 100,
+          h: 30,
+        },
+        mouse
+      )
+    )
+      selected.algorithm = option.val;
+  }
   for (const button in buttons) {
     const btn = buttons[button];
     if (!btn.hidden && rectsAreColliding(btn, mouse)) btn.clicked(e);
@@ -339,11 +354,70 @@ function drawHeuristicOptions() {
   ctx.textBaseline = "middle";
   ctx.fillText("Heuristic", uiPanelOffset + panelCenter, 300);
 
+  ctx.font = "16px Arial";
   for (let i = 0; i < heuristics.length; i++) {
     const option = heuristics[i];
-    ctx.fillStyle = option.val === selected.heuristic ? "blue" : "white";
+    ctx.fillStyle = option.val === selected.heuristic ? "gold" : "white";
     ctx.fillText(option.name, option.x, option.y);
-    // ctx.fillRect(option.x - 50, option.y - 15, 100, 30);
+  }
+}
+
+const algorithms = [
+  {
+    name: "Breadth First",
+    val: PF.enums.Algo.BreadthFirst,
+    x: uiPanelOffset + panelCenter,
+    y: 50,
+    bi: true,
+  },
+  {
+    name: "Dijkstra",
+    val: PF.enums.Algo.Dijkstra,
+    x: uiPanelOffset + panelCenter,
+    y: 80,
+    bi: true,
+  },
+  {
+    name: "A Star",
+    val: PF.enums.Algo.AStar,
+    x: uiPanelOffset + panelCenter,
+    y: 110,
+    bi: true,
+  },
+  {
+    name: "IDA Star",
+    val: PF.enums.Algo.IDAStar,
+    x: uiPanelOffset + panelCenter,
+    y: 140,
+    bi: false,
+  },
+  {
+    name: "Best First",
+    val: PF.enums.Algo.BestFirst,
+    x: uiPanelOffset + panelCenter,
+    y: 170,
+    bi: true,
+  },
+  {
+    name: "Jump Point",
+    val: PF.enums.Algo.JumpPoint,
+    x: uiPanelOffset + panelCenter,
+    y: 200,
+    bi: false,
+  },
+];
+function drawAlgorithmOptions() {
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Algorithm", uiPanelOffset + panelCenter, 20);
+
+  ctx.font = "16px Arial";
+  for (let i = 0; i < algorithms.length; i++) {
+    const option = algorithms[i];
+    ctx.fillStyle = option.val === selected.algorithm ? "gold" : "white";
+    ctx.fillText(option.name, option.x, option.y);
   }
 }
 
@@ -351,6 +425,7 @@ function drawUI() {
   const btns = Object.values(buttons);
   for (let i = 0; i < btns.length; i++) btns[i].draw();
   drawHeuristicOptions();
+  drawAlgorithmOptions();
 }
 
 let drawn = [];
