@@ -210,8 +210,7 @@ PF.utils.new2dCanvas = function (id, width, height) {
   PF.utils.interceptGridOperations = function (grid, interceptCallback) {
     return new Proxy(grid, {
       get(target, prop) {
-        if (typeof target[prop] !== "function")
-          return target[prop];
+        if (typeof target[prop] !== "function") return target[prop];
         return new Proxy(target[prop], {
           apply: (target, thisArg, argumentsList) => {
             const result = Reflect.apply(target, thisArg, argumentsList);
@@ -221,4 +220,18 @@ PF.utils.new2dCanvas = function (id, width, height) {
         });
       },
     });
+  };
+
+  PF.utils.toPageCoords = function ({ x, y }) {
+    return {
+      x: Math.floor(x * PF.settings.squareSize),
+      y: Math.floor(y * PF.settings.squareSize),
+    };
+  };
+
+  PF.utils.toGridCoords = function ({ x, y }) {
+    return {
+      x: Math.floor(x / PF.settings.squareSize),
+      y: Math.floor(y / PF.settings.squareSize),
+    };
   };

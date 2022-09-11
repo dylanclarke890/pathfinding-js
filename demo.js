@@ -102,7 +102,16 @@ const setMousePosition = (e, pressing = mouse.pressing) => {
 
 canvas.addEventListener("mousedown", (e) => {
   setMousePosition(e, true);
-  if (mouse.action === mouseActions.drawWalls) {
+  if (mouse.x > uiPanelOffset) return;
+  const { x, y } = PF.utils.toGridCoords(mouse);
+  if (x === sx && y === sy) mouse.action = mouseActions.moveStart;
+  else if (x === ex && y === ey) mouse.action = mouseActions.moveGoal;
+  else if (matrix[y][x]) {
+    mouse.action = mouseActions.eraseWalls;
+    matrix[y][x] = 0;
+  } else {
+    mouse.action = mouseActions.drawWalls;
+    matrix[y][x] = 1;
   }
 });
 
@@ -114,24 +123,24 @@ canvas.addEventListener("mouseup", (e) => {
 canvas.addEventListener("mousemove", (e) => {
   setMousePosition(e);
   if (mouse.x > uiPanelOffset || !mouse.pressing) return;
+  const { x, y } = PF.utils.toGridCoords(mouse);
   switch (mouse.action) {
     case mouseActions.drawWalls: {
-      const x = Math.floor(mouse.x / PF.settings.squareSize),
-        y = Math.floor(mouse.y / PF.settings.squareSize);
       matrix[y][x] = 1;
       break;
     }
     case mouseActions.eraseWalls: {
-      const x = Math.floor(mouse.x / PF.settings.squareSize),
-        y = Math.floor(mouse.y / PF.settings.squareSize);
       matrix[y][x] = 0;
       break;
     }
     case mouseActions.moveStart:
+      sx = x;
+      sy = y;
       break;
     case mouseActions.moveGoal:
+      ex = x;
+      ey = y;
       break;
-
     default:
       break;
   }
@@ -158,13 +167,9 @@ function rectsAreColliding(first, second) {
 
 canvas.addEventListener("click", (e) => {
   setMousePosition(e);
-  if (mouse.x <= uiPanelOffset) {
-    // const x = Math.floor(mouse.x / PF.settings.squareSize),
-    //   y = Math.floor(mouse.y / PF.settings.squareSize);
-    // matrix[y][x] = matrix[y][x] === 1 ? 0 : 1;
-  } else
-    for (let i = 0; i < buttons.length; i++)
-      if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
+  if (mouse.x <= uiPanelOffset) return;
+  for (let i = 0; i < buttons.length; i++)
+    if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
 });
 
 let obstacles = [];
