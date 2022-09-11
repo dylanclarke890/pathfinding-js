@@ -28,3 +28,10 @@ PF.enums.Algo = {
   IDASTAR: 9,
   JUMPPOINT: 10,
 };
+
+PF.enums.Heuristic = {
+  Manhattan: 1,
+  Euclidean: 2,
+  Octile: 3,
+  Chebyshev: 4,
+};
