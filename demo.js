@@ -296,6 +296,20 @@ canvas.addEventListener("click", (e) => {
   }
 });
 
+function drawCell(
+  x,
+  y,
+  fillStyle = "white",
+  size = PF.settings.squareSize,
+  strokeStyle = "grey"
+) {
+  ctx.fillStyle = fillStyle;
+  ctx.strokeStyle = strokeStyle;
+  ({ x, y } = PF.utils.toPageCoords({ x, y }));
+  ctx.fillRect(x, y, size, size);
+  ctx.strokeRect(x, y, size, size);
+}
+
 let obstacles = [];
 function drawGrid() {
   ctx.strokeStyle = "grey";
@@ -305,20 +319,15 @@ function drawGrid() {
     for (let x = 0; x < matrix[y].length; x++) {
       if (matrix[y][x]) obstacles.push([x, y]);
       else {
-        const coords = PF.utils.toPageCoords({ x, y });
-        ctx.fillRect(coords.x, coords.y, size, size);
-        ctx.strokeRect(coords.x, coords.y, size, size);
+        drawCell(x, y);
       }
     }
 }
 
 function drawObstacles() {
-  ctx.fillStyle = "blue";
   for (let i = 0; i < obstacles.length; i++) {
     const [x, y] = obstacles[i];
-    const coords = PF.utils.toPageCoords({ x, y });
-    ctx.fillRect(coords.x, coords.y, size, size);
-    ctx.strokeRect(coords.x, coords.y, size, size);
+    drawCell(x, y, "blue");
   }
 }
 
@@ -488,32 +497,20 @@ function drawSearchPath() {
   }
   for (let i = 0; i < drawn.length; i++) {
     const pos = drawn[i];
-    const coords = PF.utils.toPageCoords(pos);
-    ctx.fillStyle = "green";
-    ctx.fillRect(coords.x, coords.y, size, size);
-    ctx.strokeRect(coords.x, coords.y, size, size);
+    drawCell(pos.x, pos.y, "green");
   }
 }
 
 function drawPath() {
   for (let i = 0; i < result.length; i++) {
-    const pos = result[i];
-    const coords = PF.utils.toPageCoords({ x: pos[0], y: pos[1] });
-    ctx.fillStyle = "yellow";
-    ctx.fillRect(coords.x, coords.y, size, size);
-    ctx.strokeRect(coords.x, coords.y, size, size);
+    const [x, y] = result[i];
+    drawCell(x, y, "yellow");
   }
 }
 
 function drawPoints() {
-  const startCoords = PF.utils.toPageCoords({ x: sx, y: sy });
-  const endCoords = PF.utils.toPageCoords({ x: ex, y: ey });
-  ctx.fillStyle = "orange";
-  ctx.fillRect(startCoords.x, startCoords.y, size, size);
-  ctx.strokeRect(startCoords.x, startCoords.y, size, size);
-  ctx.fillStyle = "lightblue";
-  ctx.fillRect(endCoords.x, endCoords.y, size, size);
-  ctx.strokeRect(endCoords.x, endCoords.y, size, size);
+  drawCell(sx, sy, "orange");
+  drawCell(ex, ey, "lightblue");
 }
 
 function update() {
