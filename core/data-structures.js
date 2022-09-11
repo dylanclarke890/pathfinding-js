@@ -62,7 +62,6 @@ PF.Data.Grid = class {
      * A 2D array of nodes.
      */
     this.nodes = this.#constructNodes(width, height, matrix);
-
   }
 
   /**
@@ -227,9 +226,9 @@ PF.Data.Grid = class {
    * @return {PF.Data.Grid} Cloned grid.
    */
   clone() {
-    const newGrid = new PF.Data.Grid(width, height),
-      newNodes = new Array(height);
     const { width, height, nodes } = this;
+    const newGrid = new PF.Data.Grid({ width, height }),
+      newNodes = new Array(height);
 
     for (let i = 0; i < height; i++) {
       newNodes[i] = new Array(width);

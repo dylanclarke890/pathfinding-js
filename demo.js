@@ -9,7 +9,7 @@ const size = PF.settings.squareSize;
 let sx = 0,
   sy = 0,
   ex = 14,
-  ey = 14;
+  ey = 0;
 
 let searched = new PF.Data.Queue();
 let result = [];
@@ -35,7 +35,9 @@ function startSearch() {
   let finder = new PF.Algorithms.BestFirst({
     diagonalMovement: PF.enums.DiagonalMovement.Never,
   });
+  console.log(grid.clone());
   result = finder.findPath(sx, sy, ex, ey, grid);
+  console.log(result);
   playing = true;
 }
 
@@ -116,7 +118,7 @@ canvas.addEventListener("click", (e) => {
   if (mouse.x <= uiPanelOffset) {
     const x = Math.floor(mouse.x / PF.settings.squareSize),
       y = Math.floor(mouse.y / PF.settings.squareSize);
-    matrix[x][y] = matrix[x][y] === 1 ? 0 : 1;
+    matrix[y][x] = matrix[y][x] === 1 ? 0 : 1;
   } else
     for (let i = 0; i < buttons.length; i++)
       if (rectsAreColliding(buttons[i], mouse)) buttons[i].clicked(e);
@@ -127,12 +129,12 @@ function drawGrid() {
   ctx.strokeStyle = "grey";
   ctx.fillStyle = "white";
   obstacles = [];
-  for (let i = 0; i < matrix.length; i++)
-    for (let j = 0; j < matrix[i].length; j++) {
-      if (matrix[j][i]) obstacles.push([j, i]);
+  for (let y = 0; y < matrix.length; y++)
+    for (let x = 0; x < matrix[y].length; x++) {
+      if (matrix[y][x]) obstacles.push([x, y]);
       else {
-        ctx.fillRect(j * size, i * size, size, size);
-        ctx.strokeRect(j * size, i * size, size, size);
+        ctx.fillRect(x * size, y * size, size, size);
+        ctx.strokeRect(x * size, y * size, size, size);
       }
     }
 }
