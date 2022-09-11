@@ -11,6 +11,11 @@ let sx = 0,
   ex = 14,
   ey = 14;
 
+const selected = {
+  algorithm: PF.enums.Algo.BreadthFirst,
+  heuristic: PF.enums.Heuristic.Manhattan,
+};
+
 let searched = new PF.Data.Queue();
 let result = [];
 let playing = false;
@@ -62,6 +67,39 @@ const mouse = {
 const uiPanelOffset =
   canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
 const buttons = {
+  chooseAlgorithm: new PF.UI.Button({
+    x: uiPanelOffset + (canvas.width - uiPanelOffset) / 2 - 75,
+    y: canvas.height - 140,
+    w: 150,
+    h: 40,
+    font: "18px Arial",
+    text: "Choose Algorithm",
+    textColor: "blue",
+    bgColor: "purple",
+    onClick: (me) => {
+      buttons.clearWalls.hidden = true;
+      buttons.start.hidden = true;
+      buttons.backToStart.hidden = false;
+      me.hidden = true;
+    },
+  }),
+  backToStart: new PF.UI.Button({
+    x: uiPanelOffset + (canvas.width - uiPanelOffset) / 2 - 75,
+    y: canvas.height - 100,
+    w: 150,
+    h: 40,
+    font: "18px Arial",
+    text: "Back to Start",
+    textColor: "blue",
+    bgColor: "purple",
+    onClick: (me) => {
+      buttons.clearWalls.hidden = false;
+      buttons.start.hidden = false;
+      buttons.chooseAlgorithm.hidden = false;
+      me.hidden = true;
+    },
+    hidden: true,
+  }),
   clearWalls: new PF.UI.Button({
     x: uiPanelOffset + 135,
     y: canvas.height - 200,
@@ -222,9 +260,24 @@ function rectsAreColliding(first, second) {
 canvas.addEventListener("click", (e) => {
   setMousePosition(e);
   if (mouse.x <= uiPanelOffset) return;
+  for (let i = 0; i < heuristics.length; i++) {
+    const option = heuristics[i];
+    if (
+      rectsAreColliding(
+        {
+          x: option.x - 50,
+          y: option.y - 15,
+          w: 100,
+          h: 30,
+        },
+        mouse
+      )
+    )
+      selected.heuristic = option.val;
+  }
   for (const button in buttons) {
     const btn = buttons[button];
-    if (rectsAreColliding(btn, mouse)) btn.clicked(e);
+    if (!btn.hidden && rectsAreColliding(btn, mouse)) btn.clicked(e);
   }
 });
 
@@ -252,9 +305,52 @@ function drawObstacles() {
   }
 }
 
+const panelCenter = (canvas.width - uiPanelOffset) / 2;
+const heuristics = [
+  {
+    name: "Manhattan",
+    val: PF.enums.Heuristic.Manhattan,
+    x: uiPanelOffset + panelCenter / 2,
+    y: 330,
+  },
+  {
+    name: "Euclidean",
+    val: PF.enums.Heuristic.Euclidean,
+    x: uiPanelOffset + panelCenter + panelCenter / 2,
+    y: 330,
+  },
+  {
+    name: "Octile",
+    val: PF.enums.Heuristic.Octile,
+    x: uiPanelOffset + panelCenter / 2,
+    y: 360,
+  },
+  {
+    name: "Chebyshev",
+    val: PF.enums.Heuristic.Chebyshev,
+    x: uiPanelOffset + panelCenter + panelCenter / 2,
+    y: 360,
+  },
+];
+function drawHeuristicOptions() {
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, 300);
+
+  for (let i = 0; i < heuristics.length; i++) {
+    const option = heuristics[i];
+    ctx.fillStyle = option.val === selected.heuristic ? "blue" : "white";
+    ctx.fillText(option.name, option.x, option.y);
+    // ctx.fillRect(option.x - 50, option.y - 15, 100, 30);
+  }
+}
+
 function drawUI() {
   const btns = Object.values(buttons);
   for (let i = 0; i < btns.length; i++) btns[i].draw();
+  drawHeuristicOptions();
 }
 
 let drawn = [];

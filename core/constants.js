@@ -17,16 +17,16 @@ PF.enums.DiagonalMovement = {
 };
 
 PF.enums.Algo = {
-  ASTAR: 1,
-  BIASTAR: 2,
-  BESTFIRST: 3,
-  BIBESTFIRST: 4,
-  BREADTHFIRST: 5,
-  BIBREADTHFIRST: 6,
-  DIJKSTRA: 7,
-  BIDIJKSTRA: 8,
-  IDASTAR: 9,
-  JUMPPOINT: 10,
+  AStar: 1,
+  BiAStar: 2,
+  BestFirst: 3,
+  BiBestFirst: 4,
+  BreadthFirst: 5,
+  BiBreadthFirst: 6,
+  Dijkstra: 7,
+  BiDijkstra: 8,
+  IDAStar: 9,
+  JumpPoint: 10,
 };
 
 PF.enums.Heuristic = {
