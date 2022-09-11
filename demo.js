@@ -296,20 +296,6 @@ function rectsAreColliding(first, second) {
   return false;
 }
 
-function drawCell(
-  x,
-  y,
-  fillStyle = "white",
-  size = PF.settings.squareSize,
-  strokeStyle = "grey"
-) {
-  ctx.fillStyle = fillStyle;
-  ctx.strokeStyle = strokeStyle;
-  ({ x, y } = PF.utils.toPageCoords({ x, y }));
-  ctx.fillRect(x, y, size, size);
-  ctx.strokeRect(x, y, size, size);
-}
-
 let obstacles = [];
 function drawGrid() {
   ctx.strokeStyle = "grey";
@@ -319,7 +305,7 @@ function drawGrid() {
     for (let x = 0; x < matrix[y].length; x++) {
       if (matrix[y][x]) obstacles.push([x, y]);
       else {
-        drawCell(x, y);
+        PF.UI.drawCell(x, y);
       }
     }
 }
@@ -327,7 +313,7 @@ function drawGrid() {
 function drawObstacles() {
   for (let i = 0; i < obstacles.length; i++) {
     const [x, y] = obstacles[i];
-    drawCell(x, y, "blue");
+    PF.UI.drawCell(x, y, "blue");
   }
 }
 
@@ -497,20 +483,20 @@ function drawSearchPath() {
   }
   for (let i = 0; i < drawn.length; i++) {
     const pos = drawn[i];
-    drawCell(pos.x, pos.y, "green");
+    PF.UI.drawCell(pos.x, pos.y, "green");
   }
 }
 
 function drawPath() {
   for (let i = 0; i < result.length; i++) {
     const [x, y] = result[i];
-    drawCell(x, y, "yellow");
+    PF.UI.drawCell(x, y, "yellow");
   }
 }
 
 function drawPoints() {
-  drawCell(sx, sy, "orange");
-  drawCell(ex, ey, "lightblue");
+  PF.UI.drawCell(sx, sy, "orange");
+  PF.UI.drawCell(ex, ey, "lightblue");
 }
 
 function update() {

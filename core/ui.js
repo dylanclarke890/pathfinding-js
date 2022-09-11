@@ -30,3 +30,17 @@ PF.UI.Button = class {
     this.onClick(this, e);
   }
 };
+
+PF.UI.drawCell = function (
+  x,
+  y,
+  fillStyle = "white",
+  size = PF.settings.squareSize,
+  strokeStyle = "grey"
+) {
+  ctx.fillStyle = fillStyle;
+  ctx.strokeStyle = strokeStyle;
+  ({ x, y } = PF.utils.toPageCoords({ x, y }));
+  ctx.fillRect(x, y, size, size);
+  ctx.strokeRect(x, y, size, size);
+};
