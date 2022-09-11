@@ -273,9 +273,6 @@ const mouse = {
     setMousePosition(e, true);
     if (playing || mouse.x > uiPanelOffset) return;
     const { x, y } = PF.utils.toGridCoords(mouse);
-    searched = new PF.Data.Queue();
-    result = [];
-    drawn = [];
     if (x === sx && y === sy) mouse.action = mouseActions.moveStart;
     else if (x === ex && y === ey) mouse.action = mouseActions.moveGoal;
     else if (matrix[y][x]) {
@@ -301,6 +298,7 @@ const mouse = {
     const { x, y } = PF.utils.toGridCoords(mouse);
     switch (mouse.action) {
       case mouseActions.drawWalls: {
+        if ((x === sx && y === sy) || (x === ex && y === ey)) break;
         matrix[y][x] = 1;
         break;
       }
@@ -405,15 +403,15 @@ function drawGrid() {
     const pos = drawn[i];
     PF.UI.drawCell(pos.x, pos.y, "green");
   }
-  for (let i = 0; i < obstacles.length; i++) {
-    const [x, y] = obstacles[i];
-    PF.UI.drawCell(x, y, "blue");
-  }
   if (!searched.size) {
     for (let i = 0; i < result.length; i++) {
       const [x, y] = result[i];
       PF.UI.drawCell(x, y, "yellow");
     }
+  }
+  for (let i = 0; i < obstacles.length; i++) {
+    const [x, y] = obstacles[i];
+    PF.UI.drawCell(x, y, "blue");
   }
   PF.UI.drawCell(sx, sy, "orange");
   PF.UI.drawCell(ex, ey, "lightblue");
