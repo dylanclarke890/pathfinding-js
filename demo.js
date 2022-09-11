@@ -62,28 +62,9 @@ const mouse = {
 const uiPanelOffset =
   canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
 const buttons = {
-  start: new PF.UI.Button({
-    x: uiPanelOffset + 40,
-    y: canvas.height - 80,
-    w: 100,
-    h: 40,
-    font: "20px Arial",
-    text: "Start",
-    textColor: "purple",
-    bgColor: "lightblue",
-    onClick: (me) => {
-      if (playing) {
-        paused = !paused;
-        me.text = paused ? "Resume" : "Pause";
-      } else {
-        startSearch();
-        me.text = "Pause";
-      }
-    },
-  }),
   clearWalls: new PF.UI.Button({
-    x: uiPanelOffset + 40,
-    y: canvas.height - 160,
+    x: uiPanelOffset + 50,
+    y: canvas.height - 360,
     w: 100,
     h: 40,
     font: "18px Arial",
@@ -98,6 +79,69 @@ const buttons = {
       }
       obstacles = [];
     },
+  }),
+  start: new PF.UI.Button({
+    x: uiPanelOffset + 50,
+    y: canvas.height - 300,
+    w: 100,
+    h: 40,
+    font: "20px Arial",
+    text: "Start",
+    textColor: "purple",
+    bgColor: "lightblue",
+    onClick: (me) => {
+      if (playing) {
+        paused = !paused;
+        me.text = paused ? "Resume" : "Pause";
+        buttons.restart.hidden = !paused;
+      } else {
+        startSearch();
+        me.text = "Pause";
+        buttons.clearWalls.hidden = true;
+        buttons.cancel.hidden = false;
+      }
+    },
+  }),
+  cancel: new PF.UI.Button({
+    x: uiPanelOffset + 50,
+    y: canvas.height - 240,
+    w: 100,
+    h: 40,
+    font: "20px Arial",
+    text: "Cancel",
+    textColor: "purple",
+    bgColor: "lightblue",
+    onClick: (me) => {
+      playing = false;
+      paused = false;
+      searched = new PF.Data.Queue();
+      result = [];
+      drawn = [];
+      me.hidden = true;
+      buttons.start.text = "Start";
+      buttons.clearWalls.hidden = false;
+      buttons.restart.hidden = true;
+    },
+    hidden: true,
+  }),
+  restart: new PF.UI.Button({
+    x: uiPanelOffset + 50,
+    y: canvas.height - 180,
+    w: 100,
+    h: 40,
+    font: "20px Arial",
+    text: "Restart",
+    textColor: "purple",
+    bgColor: "lightblue",
+    onClick: (me) => {
+      startSearch();
+      playing = true;
+      paused = false;
+      me.hidden = true;
+      buttons.start.text = "Pause";
+      buttons.cancel.hidden = false;
+    },
+    hidden: true,
   }),
 };
 
@@ -124,7 +168,10 @@ canvas.addEventListener("mousedown", (e) => {
 
 canvas.addEventListener("mouseup", (e) => {
   setMousePosition(e, false);
-  if (mouse.x > uiPanelOffset) return;
+});
+
+canvas.addEventListener("mouseleave", (e) => {
+  setMousePosition(e, false);
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -218,6 +265,9 @@ function drawSearchPath() {
     drawn.push(searched.dequeue());
     if (!searched.size) {
       playing = false;
+      buttons.clearWalls.hidden = false;
+      buttons.restart.hidden = true;
+      buttons.cancel.hidden = true;
       buttons.start.text = "Start";
     }
   }
