@@ -391,68 +391,6 @@ function drawGrid() {
     for (let x = 0; x < matrix[y].length; x++)
       if (matrix[y][x]) obstacles.push([x, y]);
       else PF.UI.drawCell(x, y);
-}
-
-function drawObstacles() {
-  for (let i = 0; i < obstacles.length; i++) {
-    const [x, y] = obstacles[i];
-    PF.UI.drawCell(x, y, "blue");
-  }
-}
-
-function drawHeuristicOptions() {
-  ctx.fillStyle = "white";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, 250);
-
-  ctx.font = "16px Arial";
-  for (let i = 0; i < heuristics.length; i++) {
-    const option = heuristics[i];
-    ctx.fillStyle = option.val === selected.heuristic ? "gold" : "white";
-    ctx.fillText(option.name, option.x, option.y);
-  }
-}
-
-function drawAlgorithmOptions() {
-  ctx.fillStyle = "white";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Algorithm", uiPanelOffset + panelCenter, 20);
-
-  ctx.font = "16px Arial";
-  for (let i = 0; i < algorithms.length; i++) {
-    const option = algorithms[i];
-    ctx.fillStyle = option.val === selected.algorithm ? "gold" : "white";
-    ctx.fillText(option.name, option.x, option.y);
-  }
-}
-
-function drawCheckboxes() {
-  ctx.font = "20px Arial";
-  ctx.fillStyle = "white";
-  ctx.fillText("Options", uiPanelOffset + panelCenter, canvas.height - 240);
-
-  for (let i = 0; i < checkboxes.length; i++) {
-    const check = checkboxes[i];
-    if (!check.show) return;
-    ctx.font = `${check.fontSize}px Arial`;
-    ctx.fillStyle = selected[check.key] ? "gold" : "white";
-    ctx.fillText(check.name, check.x, check.y);
-  }
-}
-
-function drawUI() {
-  const btns = Object.values(buttons);
-  for (let i = 0; i < btns.length; i++) btns[i].draw();
-  drawHeuristicOptions();
-  drawAlgorithmOptions();
-  drawCheckboxes();
-}
-
-function drawSearchPath() {
   if (!paused && searched.size && frame % drawInterval === 0) {
     drawn.push(searched.dequeue());
     if (!searched.size) {
@@ -467,27 +405,62 @@ function drawSearchPath() {
     const pos = drawn[i];
     PF.UI.drawCell(pos.x, pos.y, "green");
   }
-}
-
-function drawPath() {
-  for (let i = 0; i < result.length; i++) {
-    const [x, y] = result[i];
-    PF.UI.drawCell(x, y, "yellow");
+  for (let i = 0; i < obstacles.length; i++) {
+    const [x, y] = obstacles[i];
+    PF.UI.drawCell(x, y, "blue");
   }
-}
-
-function drawPoints() {
+  if (!searched.size) {
+    for (let i = 0; i < result.length; i++) {
+      const [x, y] = result[i];
+      PF.UI.drawCell(x, y, "yellow");
+    }
+  }
   PF.UI.drawCell(sx, sy, "orange");
   PF.UI.drawCell(ex, ey, "lightblue");
+}
+
+function drawUI() {
+  const btns = Object.values(buttons);
+  for (let i = 0; i < btns.length; i++) btns[i].draw();
+
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Algorithm", uiPanelOffset + panelCenter, 20);
+
+  ctx.font = "16px Arial";
+  for (let i = 0; i < algorithms.length; i++) {
+    const option = algorithms[i];
+    ctx.fillStyle = option.val === selected.algorithm ? "gold" : "white";
+    ctx.fillText(option.name, option.x, option.y);
+  }
+
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.fillText("Heuristic", uiPanelOffset + panelCenter, 250);
+  ctx.font = "16px Arial";
+  for (let i = 0; i < heuristics.length; i++) {
+    const option = heuristics[i];
+    ctx.fillStyle = option.val === selected.heuristic ? "gold" : "white";
+    ctx.fillText(option.name, option.x, option.y);
+  }
+
+  ctx.font = "20px Arial";
+  ctx.fillStyle = "white";
+  ctx.fillText("Options", uiPanelOffset + panelCenter, canvas.height - 240);
+  for (let i = 0; i < checkboxes.length; i++) {
+    const check = checkboxes[i];
+    if (!check.show) return;
+    ctx.font = `${check.fontSize}px Arial`;
+    ctx.fillStyle = selected[check.key] ? "gold" : "white";
+    ctx.fillText(check.name, check.x, check.y);
+  }
 }
 
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
-  drawSearchPath();
-  drawObstacles();
-  if (!searched.size) drawPath();
-  drawPoints();
   drawUI();
   frame++;
 }
