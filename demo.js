@@ -1,4 +1,4 @@
-const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 800, 600);
+const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 850, 600);
 
 const matrixW = 15,
   matrixH = 15;
@@ -63,15 +63,15 @@ const uiPanelOffset =
   canvas.width - (canvas.width - matrixW * PF.settings.squareSize);
 const buttons = {
   clearWalls: new PF.UI.Button({
-    x: uiPanelOffset + 50,
-    y: canvas.height - 360,
+    x: uiPanelOffset + 135,
+    y: canvas.height - 200,
     w: 100,
     h: 40,
     font: "18px Arial",
     text: "Clear Walls",
     textColor: "purple",
     bgColor: "lightblue",
-    onClick: (me) => {
+    onClick: () => {
       if (playing) return;
       for (let i = 0; i < obstacles.length; i++) {
         const [x, y] = obstacles[i];
@@ -81,8 +81,8 @@ const buttons = {
     },
   }),
   start: new PF.UI.Button({
-    x: uiPanelOffset + 50,
-    y: canvas.height - 300,
+    x: uiPanelOffset + 15,
+    y: canvas.height - 200,
     w: 100,
     h: 40,
     font: "20px Arial",
@@ -103,8 +103,8 @@ const buttons = {
     },
   }),
   cancel: new PF.UI.Button({
-    x: uiPanelOffset + 50,
-    y: canvas.height - 240,
+    x: uiPanelOffset + 15,
+    y: canvas.height - 140,
     w: 100,
     h: 40,
     font: "20px Arial",
@@ -125,8 +125,8 @@ const buttons = {
     hidden: true,
   }),
   restart: new PF.UI.Button({
-    x: uiPanelOffset + 50,
-    y: canvas.height - 180,
+    x: uiPanelOffset + 135,
+    y: canvas.height - 140,
     w: 100,
     h: 40,
     font: "20px Arial",
