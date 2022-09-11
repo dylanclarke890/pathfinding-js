@@ -1,75 +1,12 @@
 const [canvas, ctx] = PF.utils.new2dCanvas("play-area", 850, 600);
+let canvasPosition = canvas.getBoundingClientRect();
+window.addEventListener("resize", () => {
+  canvasPosition = canvas.getBoundingClientRect();
+});
 
 const matrix = Array.from({ length: PF.settings.matrixSize }, () =>
   Array.from({ length: PF.settings.matrixSize }, () => 0)
 );
-const size = PF.settings.squareSize;
-let sx = 0,
-  sy = 0,
-  ex = 14,
-  ey = 14;
-
-const selected = {
-  algorithm: PF.enums.Algo.BreadthFirst,
-  heuristic: PF.enums.Heuristic.Manhattan,
-  allowDiagonal: false,
-  crossCorners: false,
-  bi: false,
-};
-
-let searched = new PF.Data.Queue();
-let result = [];
-let playing = false;
-let paused = false;
-function startSearch() {
-  searched = new PF.Data.Queue();
-  drawn = [];
-  result = [];
-  let grid = PF.utils.interceptGridOperations(
-    new PF.Data.Grid({ matrix }),
-    (fnName, _, res) => {
-      switch (fnName) {
-        case "getNeighbors":
-          for (let i = 0; i < res.length; i++)
-            if (!searched.contains(res[i])) searched.enqueue(res[i]);
-          break;
-        case "getNodeAt":
-          if (!searched.contains(res)) searched.enqueue(res);
-          break;
-        default:
-          return;
-      }
-    }
-  );
-  const { algorithm, heuristic, allowDiagonal, crossCorners, bi } = selected;
-  const pathFinder = new PF.PathFinder({
-    algorithmType: algorithm,
-    heuristicType: heuristic,
-    allowDiagonal,
-    crossCorners,
-    bi,
-  });
-  result = pathFinder.findPath(sx, sy, ex, ey, grid);
-  playing = true;
-}
-
-let canvasPosition = canvas.getBoundingClientRect();
-
-const mouseActions = {
-  drawWalls: 1,
-  eraseWalls: 2,
-  moveStart: 3,
-  moveGoal: 4,
-};
-
-const mouse = {
-  x: 0,
-  y: 0,
-  w: 0.1,
-  h: 0.1,
-  pressing: false,
-  action: mouseActions.drawWalls,
-};
 
 const uiPanelOffset =
   canvas.width -
@@ -158,67 +95,191 @@ const buttons = {
   }),
 };
 
-const setMousePosition = (e, pressing = mouse.pressing) => {
-  mouse.x = e.x - (canvasPosition.left + 6);
-  mouse.y = e.y - canvasPosition.top;
-  mouse.pressing = pressing;
+let sx = 0,
+  sy = 0,
+  ex = 14,
+  ey = 14;
+
+const selected = {
+  algorithm: PF.enums.Algo.BreadthFirst,
+  heuristic: PF.enums.Heuristic.Manhattan,
+  allowDiagonal: false,
+  crossCorners: false,
+  bi: false,
 };
 
-canvas.addEventListener("mousedown", (e) => {
-  setMousePosition(e, true);
-  if (playing || mouse.x > uiPanelOffset) return;
-  const { x, y } = PF.utils.toGridCoords(mouse);
+let searched = new PF.Data.Queue();
+let result = [];
+let playing = false;
+let paused = false;
+function startSearch() {
   searched = new PF.Data.Queue();
-  result = [];
   drawn = [];
-  if (x === sx && y === sy) mouse.action = mouseActions.moveStart;
-  else if (x === ex && y === ey) mouse.action = mouseActions.moveGoal;
-  else if (matrix[y][x]) {
-    mouse.action = mouseActions.eraseWalls;
-    matrix[y][x] = 0;
-  } else {
-    mouse.action = mouseActions.drawWalls;
-    matrix[y][x] = 1;
-  }
-});
-
-canvas.addEventListener("mouseup", (e) => {
-  setMousePosition(e, false);
-});
-
-canvas.addEventListener("mouseleave", (e) => {
-  setMousePosition(e, false);
-});
-
-canvas.addEventListener("mousemove", (e) => {
-  setMousePosition(e);
-  if (playing || mouse.x > uiPanelOffset || !mouse.pressing) return;
-  const { x, y } = PF.utils.toGridCoords(mouse);
-  switch (mouse.action) {
-    case mouseActions.drawWalls: {
-      matrix[y][x] = 1;
-      break;
+  result = [];
+  let grid = PF.utils.interceptGridOperations(
+    new PF.Data.Grid({ matrix }),
+    (fnName, _, res) => {
+      switch (fnName) {
+        case "getNeighbors":
+          for (let i = 0; i < res.length; i++)
+            if (!searched.contains(res[i])) searched.enqueue(res[i]);
+          break;
+        case "getNodeAt":
+          if (!searched.contains(res)) searched.enqueue(res);
+          break;
+        default:
+          return;
+      }
     }
-    case mouseActions.eraseWalls: {
+  );
+  const { algorithm, heuristic, allowDiagonal, crossCorners, bi } = selected;
+  const pathFinder = new PF.PathFinder({
+    algorithmType: algorithm,
+    heuristicType: heuristic,
+    allowDiagonal,
+    crossCorners,
+    bi,
+  });
+  result = pathFinder.findPath(sx, sy, ex, ey, grid);
+  playing = true;
+}
+
+const mouseActions = {
+  drawWalls: 1,
+  eraseWalls: 2,
+  moveStart: 3,
+  moveGoal: 4,
+};
+
+const mouse = {
+  x: 0,
+  y: 0,
+  w: 0.1,
+  h: 0.1,
+  pressing: false,
+  action: mouseActions.drawWalls,
+};
+
+(function setUpEvents() {
+  const setMousePosition = (e, pressing = mouse.pressing) => {
+    mouse.x = e.x - (canvasPosition.left + 6);
+    mouse.y = e.y - canvasPosition.top;
+    mouse.pressing = pressing;
+  };
+
+  canvas.addEventListener("mousedown", (e) => {
+    setMousePosition(e, true);
+    if (playing || mouse.x > uiPanelOffset) return;
+    const { x, y } = PF.utils.toGridCoords(mouse);
+    searched = new PF.Data.Queue();
+    result = [];
+    drawn = [];
+    if (x === sx && y === sy) mouse.action = mouseActions.moveStart;
+    else if (x === ex && y === ey) mouse.action = mouseActions.moveGoal;
+    else if (matrix[y][x]) {
+      mouse.action = mouseActions.eraseWalls;
       matrix[y][x] = 0;
-      break;
+    } else {
+      mouse.action = mouseActions.drawWalls;
+      matrix[y][x] = 1;
     }
-    case mouseActions.moveStart:
-      sx = x;
-      sy = y;
-      break;
-    case mouseActions.moveGoal:
-      ex = x;
-      ey = y;
-      break;
-    default:
-      break;
-  }
-});
+  });
 
-window.addEventListener("resize", () => {
-  canvasPosition = canvas.getBoundingClientRect();
-});
+  canvas.addEventListener("mouseleave", (e) => {
+    setMousePosition(e, false);
+  });
+
+  canvas.addEventListener("mouseup", (e) => {
+    setMousePosition(e, false);
+  });
+
+  canvas.addEventListener("mousemove", (e) => {
+    setMousePosition(e);
+    if (playing || mouse.x > uiPanelOffset || !mouse.pressing) return;
+    const { x, y } = PF.utils.toGridCoords(mouse);
+    switch (mouse.action) {
+      case mouseActions.drawWalls: {
+        matrix[y][x] = 1;
+        break;
+      }
+      case mouseActions.eraseWalls: {
+        matrix[y][x] = 0;
+        break;
+      }
+      case mouseActions.moveStart:
+        sx = x;
+        sy = y;
+        break;
+      case mouseActions.moveGoal:
+        ex = x;
+        ey = y;
+        break;
+      default:
+        break;
+    }
+  });
+
+  canvas.addEventListener("click", (e) => {
+    setMousePosition(e);
+    if (mouse.x <= uiPanelOffset) return;
+    for (let i = 0; i < heuristics.length; i++) {
+      const option = heuristics[i];
+      if (
+        rectsAreColliding(
+          {
+            x: option.x - 50,
+            y: option.y - 15,
+            w: 100,
+            h: 30,
+          },
+          mouse
+        )
+      ) {
+        selected.heuristic = option.val;
+        return;
+      }
+    }
+    for (let i = 0; i < algorithms.length; i++) {
+      const option = algorithms[i];
+      if (
+        rectsAreColliding(
+          {
+            x: option.x - 50,
+            y: option.y - 15,
+            w: 100,
+            h: 30,
+          },
+          mouse
+        )
+      ) {
+        selected.algorithm = option.val;
+        checkboxes[2].show = option.bi;
+        return;
+      }
+    }
+    for (let i = 0; i < checkboxes.length; i++) {
+      const option = checkboxes[i];
+      if (
+        rectsAreColliding(
+          {
+            x: option.x - 50,
+            y: option.y - 15,
+            w: 100,
+            h: 30,
+          },
+          mouse
+        )
+      ) {
+        selected[option.key] = !selected[option.key];
+        return;
+      }
+    }
+    for (const button in buttons) {
+      const btn = buttons[button];
+      if (!btn.hidden && rectsAreColliding(btn, mouse)) btn.clicked(e);
+    }
+  });
+})();
 
 function rectsAreColliding(first, second) {
   if (!first || !second) return false;
@@ -234,67 +295,6 @@ function rectsAreColliding(first, second) {
   }
   return false;
 }
-
-canvas.addEventListener("click", (e) => {
-  setMousePosition(e);
-  if (mouse.x <= uiPanelOffset) return;
-  for (let i = 0; i < heuristics.length; i++) {
-    const option = heuristics[i];
-    if (
-      rectsAreColliding(
-        {
-          x: option.x - 50,
-          y: option.y - 15,
-          w: 100,
-          h: 30,
-        },
-        mouse
-      )
-    ) {
-      selected.heuristic = option.val;
-      return;
-    }
-  }
-  for (let i = 0; i < algorithms.length; i++) {
-    const option = algorithms[i];
-    if (
-      rectsAreColliding(
-        {
-          x: option.x - 50,
-          y: option.y - 15,
-          w: 100,
-          h: 30,
-        },
-        mouse
-      )
-    ) {
-      selected.algorithm = option.val;
-      checkboxes[2].show = option.bi;
-      return;
-    }
-  }
-  for (let i = 0; i < checkboxes.length; i++) {
-    const option = checkboxes[i];
-    if (
-      rectsAreColliding(
-        {
-          x: option.x - 50,
-          y: option.y - 15,
-          w: 100,
-          h: 30,
-        },
-        mouse
-      )
-    ) {
-      selected[option.key] = !selected[option.key];
-      return;
-    }
-  }
-  for (const button in buttons) {
-    const btn = buttons[button];
-    if (!btn.hidden && rectsAreColliding(btn, mouse)) btn.clicked(e);
-  }
-});
 
 function drawCell(
   x,
