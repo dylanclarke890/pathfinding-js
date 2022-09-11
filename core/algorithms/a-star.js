@@ -12,11 +12,12 @@ PF.Algorithms.AStar = class {
     opt = opt || {};
     this.heuristic = opt.heuristic || PF.Heuristic.manhattan;
     this.weight = opt.weight || 1;
-    this.diagonalMovement = opt.diagonalMovement || PF.DiagonalMovement.Never;
+    this.diagonalMovement =
+      opt.diagonalMovement || PF.enums.DiagonalMovement.Never;
     // When diagonal movement is allowed the manhattan heuristic is not
     // admissible. It should be octile instead
     this.heuristic =
-      this.diagonalMovement === PF.DiagonalMovement.Never
+      this.diagonalMovement === PF.enums.DiagonalMovement.Never
         ? opt.heuristic || PF.Heuristic.manhattan
         : opt.heuristic || PF.Heuristic.octile;
   }

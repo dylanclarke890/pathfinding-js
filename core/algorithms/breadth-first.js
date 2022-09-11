@@ -10,7 +10,8 @@ PF.Algorithms.BreadthFirst = class {
    */
   constructor(opt) {
     opt = opt || {};
-    this.diagonalMovement = opt.diagonalMovement || PF.DiagonalMovement.Never;
+    this.diagonalMovement =
+      opt.diagonalMovement || PF.enums.DiagonalMovement.Never;
   }
 
   /**

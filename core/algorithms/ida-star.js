@@ -17,7 +17,8 @@ PF.Algorithms = PF.Algorithms || {};
 PF.Algorithms.IDAStar = class {
   constructor(opt) {
     opt = opt || {};
-    this.diagonalMovement = opt.diagonalMovement || PF.DiagonalMovement.Never;
+    this.diagonalMovement =
+      opt.diagonalMovement || PF.enums.DiagonalMovement.Never;
     this.heuristic = opt.heuristic || PF.Heuristic.manhattan;
     this.weight = opt.weight || 1;
     this.trackRecursion = opt.trackRecursion || false;
@@ -26,7 +27,7 @@ PF.Algorithms.IDAStar = class {
     // When diagonal movement is allowed the manhattan heuristic is not
     // admissible, it should be octile instead
     this.heuristic =
-      this.diagonalMovement === PF.DiagonalMovement.Never
+      this.diagonalMovement === PF.enums.DiagonalMovement.Never
         ? opt.heuristic || PF.Heuristic.manhattan
         : opt.heuristic || PF.Heuristic.octile;
     this.nodeHeuristic = (a, b) =>

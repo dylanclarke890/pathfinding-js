@@ -168,7 +168,10 @@ class JPFNeverMoveDiagonally extends JPFBase {
       }
     } else {
       // return all neighbors
-      const neighborNodes = grid.getNeighbors(node, PF.DiagonalMovement.Never);
+      const neighborNodes = grid.getNeighbors(
+        node,
+        PF.enums.DiagonalMovement.Never
+      );
       for (let i = 0; i < neighborNodes.length; i++) {
         const neighborNode = neighborNodes[i];
         neighbors.push([neighborNode.x, neighborNode.y]);
@@ -284,7 +287,10 @@ class JPFAlwaysMoveDiagonally extends JPFBase {
       }
     } else {
       // return all neighbors
-      const neighborNodes = grid.getNeighbors(node, PF.DiagonalMovement.Always);
+      const neighborNodes = grid.getNeighbors(
+        node,
+        PF.enums.DiagonalMovement.Always
+      );
       for (let i = 0; i < neighborNodes.length; ++i) {
         const neighborNode = neighborNodes[i];
         neighbors.push([neighborNode.x, neighborNode.y]);
@@ -415,7 +421,7 @@ class JPFMoveDiagonallyIfNoObstacles extends JPFBase {
     else {
       const neighborNodes = grid.getNeighbors(
         node,
-        PF.DiagonalMovement.OnlyWhenNoObstacles
+        PF.enums.DiagonalMovement.OnlyWhenNoObstacles
       );
       for (let i = 0; i < neighborNodes.length; i++) {
         const neighborNode = neighborNodes[i];
@@ -544,7 +550,7 @@ class JPFMoveDiagonallyIfAtMostOneObstacle extends JPFBase {
     else {
       const neighborNodes = grid.getNeighbors(
         node,
-        PF.DiagonalMovement.IfAtMostOneObstacle
+        PF.enums.DiagonalMovement.IfAtMostOneObstacle
       );
       for (let i = 0; i < neighborNodes.length; i++) {
         const neighborNode = neighborNodes[i];
@@ -559,16 +565,16 @@ class JPFMoveDiagonallyIfAtMostOneObstacle extends JPFBase {
 PF.Algorithms.JumpPoint = class {
   constructor(diagonalMovement) {
     switch (diagonalMovement) {
-      case PF.DiagonalMovement.Never:
+      case PF.enums.DiagonalMovement.Never:
         this.algorithm = new JPFNeverMoveDiagonally();
         break;
-      case PF.DiagonalMovement.Always:
+      case PF.enums.DiagonalMovement.Always:
         this.algorithm = new JPFAlwaysMoveDiagonally();
         break;
-      case PF.DiagonalMovement.OnlyWhenNoObstacles:
+      case PF.enums.DiagonalMovement.OnlyWhenNoObstacles:
         this.algorithm = new JPFMoveDiagonallyIfNoObstacles();
         break;
-      case PF.DiagonalMovement.IfAtMostOneObstacle:
+      case PF.enums.DiagonalMovement.IfAtMostOneObstacle:
         this.algorithm = new JPFMoveDiagonallyIfAtMostOneObstacle();
         break;
       default:

@@ -3,7 +3,7 @@
  * @constructor
  * @extends PF.Algorithms.BiAStar
  * @param {Object} opt
- * @param {PF.DiagonalMovement} opt.diagonalMovement Allowed diagonal movement. Defaults to "Never".
+ * @param {PF.enums.DiagonalMovement} opt.diagonalMovement Allowed diagonal movement. Defaults to "Never".
  * @param {function} opt.heuristic Heuristic function to estimate the distance
  */
 PF.Algorithms.BiBestFirst = class extends PF.Algorithms.BiAStar {

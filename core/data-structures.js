@@ -183,21 +183,21 @@ PF.Data.Grid = class {
       d3 = false;
 
     switch (diagonalMovement) {
-      case PF.DiagonalMovement.Never:
+      case PF.enums.DiagonalMovement.Never:
         return neighbors;
-      case PF.DiagonalMovement.Always:
+      case PF.enums.DiagonalMovement.Always:
         d0 = true;
         d1 = true;
         d2 = true;
         d3 = true;
         break;
-      case PF.DiagonalMovement.OnlyWhenNoObstacles:
+      case PF.enums.DiagonalMovement.OnlyWhenNoObstacles:
         d0 = s3 && s0;
         d1 = s0 && s1;
         d2 = s1 && s2;
         d3 = s2 && s3;
         break;
-      case PF.DiagonalMovement.IfAtMostOneObstacle:
+      case PF.enums.DiagonalMovement.IfAtMostOneObstacle:
         d0 = s3 || s0;
         d1 = s0 || s1;
         d2 = s1 || s2;

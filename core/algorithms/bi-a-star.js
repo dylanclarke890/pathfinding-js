@@ -14,14 +14,15 @@ PF.Algorithms.BiAStar = class {
    */
   constructor(opt) {
     opt = opt || {};
-    this.diagonalMovement = opt.diagonalMovement || PF.DiagonalMovement.Never;
+    this.diagonalMovement =
+      opt.diagonalMovement || PF.enums.DiagonalMovement.Never;
     this.heuristic = opt.heuristic || PF.Heuristic.manhattan;
     this.weight = opt.weight || 1;
 
     //When diagonal movement is allowed the manhattan heuristic is not admissible
     //It should be octile instead
     this.heuristic =
-      this.diagonalMovement === PF.DiagonalMovement.Never
+      this.diagonalMovement === PF.enums.DiagonalMovement.Never
         ? (this.heuristic = opt.heuristic || PF.Heuristic.manhattan)
         : (this.heuristic = opt.heuristic || PF.Heuristic.octile);
   }

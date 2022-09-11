@@ -9,6 +9,6 @@ PF.PathFinder = class {
    */
   constructor(opt) {
     opt = opt || {};
-    const algoType = opt.algorithm || PF.Algo.BREADTHFIRST;
+    const algoType = opt.algorithm || PF.enums.Algo.BREADTHFIRST;
   }
 };

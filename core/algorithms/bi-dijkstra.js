@@ -6,7 +6,7 @@ PF.Algorithms = PF.Algorithms || {};
  * @constructor
  * @extends PF.Algorithms.BiAStar
  * @param {Object} opt
- * @param {PF.DiagonalMovement} opt.diagonalMovement Allowed diagonal movement. Defaults to "Never".
+ * @param {PF.enums.DiagonalMovement} opt.diagonalMovement Allowed diagonal movement. Defaults to "Never".
  */
 PF.Algorithms.BiDijkstra = class extends PF.Algorithms.BiAStar {
   constructor(opt) {

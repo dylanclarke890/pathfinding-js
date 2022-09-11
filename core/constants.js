@@ -1,4 +1,5 @@
 var PF = PF || {};
+PF.enums = PF.enums || {};
 
 const FPS = 60;
 PF.settings = {
@@ -8,14 +9,14 @@ PF.settings = {
   searchPathDrawInterval: 0.1, // in seconds
 };
 
-PF.DiagonalMovement = {
+PF.enums.DiagonalMovement = {
   Always: 1,
   Never: 2,
   IfAtMostOneObstacle: 3,
   OnlyWhenNoObstacles: 4,
 };
 
-PF.Algo = {
+PF.enums.Algo = {
   ASTAR: 1,
   BIASTAR: 2,
   BESTFIRST: 3,
