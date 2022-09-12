@@ -2,6 +2,8 @@ body {
   background: rgb(19, 30, 41);
   display: grid;
   place-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
 #play-area {
