@@ -410,30 +410,27 @@ function drawGrid() {
   PF.UI.drawCell(ex, ey, "lightblue");
 
   // Final Search Path
-  if (result.length) {
-    const [x0, y0] = result[0];
-    const first = PF.utils.toPageCoords({ x: x0, y: y0 });
-    const offset = PF.settings.squareSize / 2;
-    first.x += offset;
-    first.y += offset;
-    ctx.strokeStyle = "yellow";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(first.x, first.y);
-    if (!searched.size) {
-      for (let i = 1; i < result.length; i++) {
-        if (!result[i]) continue;
-        const [x, y] = result[i];
-        const coords = PF.utils.toPageCoords({ x, y });
-        coords.x += offset;
-        coords.y += offset;
-        ctx.lineTo(coords.x, coords.y);
-      }
-    }
-    ctx.stroke();
-    ctx.closePath();
-    ctx.lineWidth = 1;
+  if (!result.length || searched.size) return;
+  const [x0, y0] = result[0];
+  const first = PF.utils.toPageCoords({ x: x0, y: y0 });
+  const offset = PF.settings.squareSize / 2;
+  first.x += offset;
+  first.y += offset;
+  ctx.strokeStyle = "yellow";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(first.x, first.y);
+  for (let i = 1; i < result.length; i++) {
+    if (!result[i]) continue;
+    const [x, y] = result[i];
+    const coords = PF.utils.toPageCoords({ x, y });
+    coords.x += offset;
+    coords.y += offset;
+    ctx.lineTo(coords.x, coords.y);
   }
+  ctx.stroke();
+  ctx.closePath();
+  ctx.lineWidth = 1;
 }
 
 function drawUI() {
