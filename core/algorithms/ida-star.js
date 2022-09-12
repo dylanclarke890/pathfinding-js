@@ -10,9 +10,6 @@ PF.Algorithms = PF.Algorithms || {};
  *     (defaults to manhattan).
  * @param {number} opt.weight Weight to apply to the heuristic to allow for
  *     suboptimal paths, in order to speed up the search.
- * @param {boolean} opt.trackRecursion Whether to track recursion for
- *     statistical purposes.
- * @param {number} opt.timeLimit Maximum execution time. Use <= 0 for infinite.
  */
 PF.Algorithms.IDAStar = class {
   constructor(opt) {
@@ -21,8 +18,6 @@ PF.Algorithms.IDAStar = class {
       opt.diagonalMovement || PF.enums.DiagonalMovement.Never;
     this.heuristic = opt.heuristic || PF.Heuristic.manhattan;
     this.weight = opt.weight || 1;
-    this.trackRecursion = opt.trackRecursion || false;
-    this.timeLimit = opt.timeLimit || Infinity; // Default: no time limit.
 
     // When diagonal movement is allowed the manhattan heuristic is not
     // admissible, it should be octile instead
@@ -32,8 +27,6 @@ PF.Algorithms.IDAStar = class {
         : opt.heuristic || PF.Heuristic.octile;
     this.nodeHeuristic = (a, b) =>
       this.heuristic(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
-
-    this.nodesVisited = 0; // Used for statistics.
   }
 
   /**
@@ -84,14 +77,6 @@ PF.Algorithms.IDAStar = class {
    * or a valid node instance, in which case a path was found.
    */
   search(node, nodeCost, cutoff, route, depth, end, grid) {
-    this.nodesVisited++;
-    // Enforce timelimit:
-    if (
-      this.timeLimit > 0 &&
-      Date.now() - this.startTime > this.timeLimit * 1000
-    )
-      return Infinity; // Enforced as "path-not-found".
-
     const current = nodeCost + this.nodeHeuristic(node, end) * this.weight;
 
     if (current > cutoff) return current; // We've searched too deep for this iteration.
@@ -107,10 +92,6 @@ PF.Algorithms.IDAStar = class {
       const neighbour = neighbours[i];
       // Retain a copy for visualisation. Due to recursion, this
       // node may be part of other paths too.
-      if (this.trackRecursion) {
-        neighbour.retainCount = neighbour.retainCount + 1 || 1;
-        neighbour.tested = true;
-      }
 
       const searchResult = this.search(
         neighbour,
@@ -128,8 +109,6 @@ PF.Algorithms.IDAStar = class {
       }
 
       // Decrement count, then determine whether it's actually closed.
-      if (this.trackRecursion && --neighbour.retainCount === 0)
-        neighbour.tested = false;
       if (searchResult < min) min = searchResult;
     }
 
