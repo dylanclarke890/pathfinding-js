@@ -374,6 +374,7 @@ const mouse = {
 })();
 
 function drawGrid() {
+  // Grid
   ctx.strokeStyle = "grey";
   ctx.fillStyle = "white";
   obstacles = [];
@@ -391,22 +392,48 @@ function drawGrid() {
       buttons.start.text = "Start";
     }
   }
+
+  // Searched areas of the grid
   for (let i = 0; i < drawn.length; i++) {
     const pos = drawn[i];
     PF.UI.drawCell(pos.x, pos.y, "green");
   }
-  if (!searched.size) {
-    for (let i = 0; i < result.length; i++) {
-      const [x, y] = result[i];
-      PF.UI.drawCell(x, y, "yellow");
-    }
-  }
+
+  // Obstacles
   for (let i = 0; i < obstacles.length; i++) {
     const [x, y] = obstacles[i];
     PF.UI.drawCell(x, y, "blue");
   }
+
+  // Goal/End points
   PF.UI.drawCell(sx, sy, "orange");
   PF.UI.drawCell(ex, ey, "lightblue");
+
+  // Final Search Path
+  if (result.length) {
+    const [x0, y0] = result[0];
+    const first = PF.utils.toPageCoords({ x: x0, y: y0 });
+    const offset = PF.settings.squareSize / 2;
+    first.x += offset;
+    first.y += offset;
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(first.x, first.y);
+    if (!searched.size) {
+      for (let i = 1; i < result.length; i++) {
+        if (!result[i]) continue;
+        const [x, y] = result[i];
+        const coords = PF.utils.toPageCoords({ x, y });
+        coords.x += offset;
+        coords.y += offset;
+        ctx.lineTo(coords.x, coords.y);
+      }
+    }
+    ctx.stroke();
+    ctx.closePath();
+    ctx.lineWidth = 1;
+  }
 }
 
 function drawUI() {
