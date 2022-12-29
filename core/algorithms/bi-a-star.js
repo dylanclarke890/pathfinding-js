@@ -23,8 +23,8 @@ PF.Algorithms.BiAStar = class {
     //It should be octile instead
     this.heuristic =
       this.diagonalMovement === PF.enums.DiagonalMovement.Never
-        ? (this.heuristic = opt.heuristic || PF.Heuristic.manhattan)
-        : (this.heuristic = opt.heuristic || PF.Heuristic.octile);
+        ? opt.heuristic || PF.Heuristic.manhattan
+        : opt.heuristic || PF.Heuristic.octile;
   }
   /**
    * Find and return the the path.
